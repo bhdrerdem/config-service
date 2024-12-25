@@ -3,6 +3,7 @@ import { Config } from "./config";
 import { Redis } from "./storage/Redis";
 import { Firestore } from "./storage/DB";
 import v1Routes from "./routes/v1Routes";
+import cors from "cors";
 
 export class Server {
   private config: Config;
@@ -35,6 +36,16 @@ export class Server {
     const app = express();
     const port = this.config.port;
 
+    if (process.env.NODE_ENV === "production") {
+      app.use(cors());
+    } else {
+      app.use(
+        cors({
+          origin: `http://localhost:5173`,
+          credentials: true,
+        })
+      );
+    }
     app.use(express.json());
 
     app.get("/health", (req: Request, res: Response) => {
