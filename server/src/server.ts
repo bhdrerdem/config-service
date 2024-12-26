@@ -36,7 +36,7 @@ export class Server {
     const app = express();
     const port = this.config.port;
 
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV !== "dev") {
       app.use(cors());
     } else {
       app.use(

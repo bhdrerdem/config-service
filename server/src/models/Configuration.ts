@@ -84,7 +84,6 @@ export class Configuration {
   }
 
   public static fromPlain(data: Record<string, unknown>): Configuration {
-    console.log("data2", data);
     return plainToInstance(Configuration, data);
   }
 
