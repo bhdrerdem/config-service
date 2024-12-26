@@ -5,13 +5,26 @@
     <td class="config-data">{{ config.description }}</td>
     <td class="config-data">{{ formattedCreatedAt }}</td>
     <td>
-      <div class="action-btn-container"></div>
+      <div class="action-btn-container">
+        <ActionButton text="Edit" kind="secondary" :onClick="openEditModal" />
+        <ActionButton text="Delete" kind="primary" :onClick="handleDelete" />
+      </div>
     </td>
   </tr>
+  <EditModal
+    v-if="isEditModalOpen"
+    :visible="isEditModalOpen"
+    :config="config"
+    @close="closeEditModal"
+    @save="saveChanges"
+  />
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import ActionButton from "../../components/Button.vue";
+import { useConfig } from "../../composables/useConfig";
+import EditModal from "../../components/Modal.vue";
 
 const props = defineProps({
   config: {
@@ -20,10 +33,34 @@ const props = defineProps({
   },
 });
 
+const isEditModalOpen = ref(false);
+
+const openEditModal = () => {
+  isEditModalOpen.value = true;
+};
+
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+};
+
+const saveChanges = async (editedConfig) => {
+  await useConfig().updateConfiguration(editedConfig);
+  closeEditModal();
+};
+
 const formattedCreatedAt = computed(() => {
-  const date = new Date(props.config.createdAt);
-  return date.toLocaleString();
+  return new Intl.DateTimeFormat("default", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(props.config.createdAt));
 });
+
+const handleDelete = async () => {
+  await useConfig().deleteConfiguration(props.config);
+};
 </script>
 
 <style scoped>
@@ -73,8 +110,15 @@ const formattedCreatedAt = computed(() => {
 }
 
 .config-data {
-  font-size: medium;
-  font-weight: 200;
-  color: white;
+  text-align: left;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #c8c8d1;
+  margin: 0px;
+
+  max-width: 300px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 </style>

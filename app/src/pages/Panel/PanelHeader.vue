@@ -6,10 +6,10 @@
 
     <div class="header-user" @click="toggleSignout">
       <FontAwesomeIcon :icon="faUser" />
-      <span v-if="showSignout === false">&#9660;</span>
-      <span v-else>&#9650;</span>
+      <FontAwesomeIcon :icon="faCaretDown" v-if="showSignout === false" />
+      <FontAwesomeIcon :icon="faCaretUp" v-else />
       <div v-if="showSignout" class="signout-dropdown">
-        <button class="signout-button" @click="Signout">Sign Out</button>
+        <ActionButton text="Sign out" :onClick="handleSignout" fullWidth />
       </div>
     </div>
   </div>
@@ -18,8 +18,13 @@
 <script setup>
 import { ref } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser,
+  faCaretDown,
+  faCaretUp,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../composables/useAuth";
+import ActionButton from "../../components/Button.vue";
 
 const { signout } = useAuth();
 
@@ -29,7 +34,7 @@ const toggleSignout = () => {
   showSignout.value = !showSignout.value;
 };
 
-const Signout = async () => {
+const handleSignout = async () => {
   try {
     await signout();
   } catch (error) {
@@ -61,19 +66,10 @@ const Signout = async () => {
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
+  background-color: transparent;
+  border: none;
   border-radius: 4px;
-  padding: 5px;
   width: 100px;
   margin-top: 2px;
-}
-
-.signout-button {
-  width: 100%;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
 }
 </style>

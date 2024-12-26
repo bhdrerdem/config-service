@@ -1,5 +1,5 @@
 <template>
-  <button :class="buttonClasses" :type="buttonType" @click="onClick">
+  <button :class="buttonClasses" :type="buttonType" @click="handleClick">
     {{ text }}
   </button>
 </template>
@@ -36,6 +36,12 @@ const buttonClasses = computed(() => {
     `btn-kind-${props.kind}`,
   ];
 });
+
+const handleClick = (event) => {
+  if (props.onClick) {
+    props.onClick(event);
+  }
+};
 </script>
 
 <style>

@@ -1,4 +1,7 @@
-import { useConfigurationStore } from "../store/configuration";
+import {
+  useConfigurationStore,
+  type Configuration,
+} from "../store/configuration";
 import { storeToRefs } from "pinia";
 
 export function useConfig() {
@@ -7,16 +10,27 @@ export function useConfig() {
   const { configurations, isLoading } = storeToRefs(configStore);
 
   const fetchConfigurations = async () => {
-    try {
-      await configStore.fetchConfigurations();
-    } catch (error) {
-      console.error("[useConfig] Failed to fetch configurations:", error);
-    }
+    await configStore.fetchConfigurations();
+  };
+
+  const deleteConfiguration = async (config: Configuration) => {
+    await configStore.deleteConfiguration(config);
+  };
+
+  const updateConfiguration = async (config: Configuration) => {
+    await configStore.updateConfiguration(config);
+  };
+
+  const createConfiguration = async (config: Configuration) => {
+    await configStore.createConfiguration(config);
   };
 
   return {
     configurations,
     isLoading,
     fetchConfigurations,
+    deleteConfiguration,
+    updateConfiguration,
+    createConfiguration,
   };
 }

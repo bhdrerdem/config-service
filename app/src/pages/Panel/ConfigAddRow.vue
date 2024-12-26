@@ -28,7 +28,9 @@
       />
     </td>
     <td>
-      <div class="action-btn-container"></div>
+      <div class="action-btn-container">
+        <ActionButton text="Add" kind="secondary" :onClick="handleCreate" />
+      </div>
     </td>
   </tr>
 </template>
@@ -36,21 +38,29 @@
 <script setup>
 import { ref } from "vue";
 import Input from "../../components/Input.vue";
+import ActionButton from "../../components/Button.vue";
+import { useConfig } from "../../composables/useConfig";
 
 const parameterKey = ref("");
 const value = ref("");
 const description = ref("");
+
+const handleCreate = async () => {
+  await useConfig().createConfiguration({
+    parameterKey: parameterKey.value,
+    value: value.value,
+    description: description.value,
+  });
+
+  parameterKey.value = "";
+  value.value = "";
+  description.value = "";
+};
 </script>
 
 <style scoped>
 .config-input {
-  border-radius: 6px;
-  padding: 8px;
-  background-color: inherit;
-  border: 1px solid;
-  border-color: #2a324f;
-  color: white;
-  width: 88%;
+  width: 90%;
 }
 
 @media only screen and (max-width: 768px) {

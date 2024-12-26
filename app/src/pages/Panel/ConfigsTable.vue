@@ -15,8 +15,11 @@
           <div style="display: flex; align-items: center">
             <h3 style="cursor: pointer">
               Create Date
-              <span v-if="sortOrder === 'descending'">&#9660;</span>
-              <span v-else>&#9650;</span>
+              <FontAwesomeIcon
+                :icon="faArrowDown"
+                v-if="sortOrder === 'desc'"
+              />
+              <FontAwesomeIcon :icon="faArrowUp" v-else />
             </h3>
           </div>
         </th>
@@ -24,9 +27,9 @@
     </thead>
     <tbody>
       <ConfigRow
-        v-for="(configuration, index) in configurations"
+        v-for="(config, index) in sortedConfigs"
         :key="index"
-        :config="configuration"
+        :config="config"
       />
       <ConfigAddRow />
     </tbody>
@@ -37,7 +40,9 @@
 import ConfigRow from "./ConfigRow.vue";
 import ConfigAddRow from "./ConfigAddRow.vue";
 import { useConfig } from "../../composables/useConfig";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 const { configurations, fetchConfigurations } = useConfig();
 
@@ -45,6 +50,14 @@ const sortOrder = ref("desc");
 const toggleSortOrder = () => {
   sortOrder.value = sortOrder.value === "desc" ? "asc" : "desc";
 };
+
+const sortedConfigs = computed(() => {
+  return configurations.value.sort((a, b) => {
+    return sortOrder.value === "desc"
+      ? b.createdAt - a.createdAt
+      : a.createdAt - b.createdAt;
+  });
+});
 
 onMounted(async () => {
   await fetchConfigurations();
@@ -80,11 +93,10 @@ onMounted(async () => {
 
 .table-title h3 {
   text-align: left;
-  margin: 0;
-  color: #c8c8cd;
-}
-
-.table-title span {
-  color: #c8c8cd;
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: #74879f;
+  margin: 0px;
 }
 </style>

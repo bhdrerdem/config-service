@@ -39,7 +39,7 @@ input {
   border: 1px solid #2a3451;
   border-radius: 4px;
   background-color: #1e1e2e;
-  color: #697179;
+  color: #fff;
   text-align: left;
   text-indent: 10px;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
