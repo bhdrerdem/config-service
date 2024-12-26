@@ -1,11 +1,10 @@
 import axios from "axios";
 import { auth } from "../firebase";
 
-// Environment değişkeninden alınması önerilir.
-const PREDEFINED_API_TOKEN = "test";
+const PREDEFINED_API_TOKEN = import.meta.env.VITE_API_TOKEN;
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3001/api/v1",
+  baseURL: import.meta.env.VITE_BACKEND_URL,
   timeout: 5000,
 });
 
