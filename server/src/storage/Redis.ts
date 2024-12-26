@@ -17,7 +17,7 @@ export class Redis {
     }
 
     Redis.instance.client = createClient({
-      url: Redis.instance.config.url,
+      url: `redis://${Redis.instance.config.host}:6379`,
     });
     await Redis.instance.connect();
   }

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export type RedisConfig = {
-  url: string;
+  host: string;
 };
 
 export type FirebaseConfig = {
@@ -20,9 +20,9 @@ export type Config = {
 };
 
 export default {
-  port: process.env.PORT || 3001,
+  port: process.env.PORT || 8080,
   redis: {
-    url: process.env.REDIS_URL || "redis://localhost:6379",
+    host: process.env.REDIS_HOST || "localhost",
   } as RedisConfig,
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID || "",
