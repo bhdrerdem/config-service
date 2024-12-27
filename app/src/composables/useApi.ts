@@ -5,7 +5,7 @@ import { config } from "../config";
 const PREDEFINED_API_TOKEN = config.VITE_API_TOKEN;
 
 const axiosInstance = axios.create({
-  baseURL: config.VITE_BACKEND_URL,
+  baseURL: `${config.VITE_BACKEND_URL}/api/v1`,
   timeout: 5000,
 });
 
