@@ -19,12 +19,18 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
-      - name: Log in to Google Container Registry
-        uses: docker/login-action@v2
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          registry: gcr.io
-          username: _json_key
-          password: ${{ secrets.GCP_SA_KEY }}
+          version: "latest"
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud auth configure-docker
 
       - name: Build, tag, and push image to GCR
         id: build-image
