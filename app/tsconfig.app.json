@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "allowJs": true
+    "allowJs": true,
+    "outDir": "dist"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

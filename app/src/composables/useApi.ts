@@ -1,10 +1,11 @@
 import axios from "axios";
 import { auth } from "../firebase";
+import { config } from "../config";
 
-const PREDEFINED_API_TOKEN = import.meta.env.VITE_API_TOKEN;
+const PREDEFINED_API_TOKEN = config.VITE_API_TOKEN;
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: config.VITE_BACKEND_URL,
   timeout: 5000,
 });
 
