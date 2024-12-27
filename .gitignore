@@ -61,3 +61,24 @@ dist/
 
 # npm Debug Logs
 npm-debug.log*
+
+# Terraform files
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore backup files
+*.backup
+
+# Ignore .terraform directory (contains provider binaries and configuration cache)
+.terraform/
+
+# Ignore sensitive variable files
+terraform.tfvars
+terraform.tfvars.json
+
+# Ignore log files
+*.log
+
+# Ignore other sensitive files
+.terraform.lock.hcl
