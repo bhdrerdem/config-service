@@ -33,7 +33,7 @@ jobs:
 
       - name: Build, tag, and push image to GCR
         id: build-image
-        working-directory: server
+        working-directory: app
         run: |
           docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
           docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE_NAME }}:latest .
