@@ -1,0 +1,33 @@
+# Exclude node_modules
+node_modules
+node_modules/**
+
+# Exclude build output (if rebuilding within Docker)
+dist
+dist/**
+
+# Ignore local environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.*
+
+# Ignore logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore local editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+tmp
+temp
