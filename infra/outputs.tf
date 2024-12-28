@@ -3,7 +3,12 @@ output "redis_host" {
   description = "Redis instance host"
 }
 
-output "redis_port" {
-  value       = google_redis_instance.cache.port
-  description = "Redis instance port"
-} 
+output "backend_service_url" {
+  value       = google_cloud_run_service.server.status[0].url
+  description = "URL of the backend Cloud Run service"
+}
+
+output "frontend_service_url" {
+  value       = google_cloud_run_service.ui.status[0].url
+  description = "URL of the frontend Cloud Run service"
+}

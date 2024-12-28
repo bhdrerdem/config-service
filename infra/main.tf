@@ -27,7 +27,7 @@ resource "google_compute_subnetwork" "default-subnetwork" {
 
 # Redis
 resource "google_redis_instance" "cache" {
-  name           = "redis-cache"
+  name           = "codeway-case-redis-cache"
   tier           = "BASIC"
   memory_size_gb = 1
   region         = "europe-west1"
@@ -52,15 +52,6 @@ resource "google_compute_firewall" "allow_redis" {
   source_ranges = ["10.0.0.0/24"]
 }
 
-# Service Account for Cloud Run
-module "service_account" {
-  source     = "terraform-google-modules/service-accounts/google"
-  version    = "~> 4.2"
-  project_id = var.project_id
-  prefix     = "sa-cloud-run"
-  names      = ["backend"]
-}
-
 # VPC Connector for Cloud Run to connect VPC based instances like Redis
 resource "google_vpc_access_connector" "vpc_connector" {
   name          = "cloud-run-vpc-connector"
@@ -72,10 +63,16 @@ resource "google_vpc_access_connector" "vpc_connector" {
 }
 
 # Backend Service
-resource "google_cloud_run_service" "main" {
-  name     = "ci-cloud-run"
+resource "google_cloud_run_service" "server" {
+  name     = "prod-codeway-case-server"
   location = "europe-west1"
   project  = var.project_id
+
+  metadata {
+    annotations = {
+      "run.googleapis.com/ingress" = "all"
+    }
+  }
 
   template {
     spec {
@@ -108,7 +105,6 @@ resource "google_cloud_run_service" "main" {
     metadata {
       annotations = {
         "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.vpc_connector.name
-        "run.googleapis.com/ingress"             = "all"
       }
     }
   }
@@ -118,7 +114,72 @@ resource "google_cloud_run_service" "main" {
 resource "google_cloud_run_service_iam_binding" "unauthenticated" {
   location = "europe-west1"
   project  = var.project_id
-  service  = google_cloud_run_service.main.name
+  service  = google_cloud_run_service.server.name
+
+  role    = "roles/run.invoker"
+  members = ["allUsers"]
+}
+
+# Frontend Service
+resource "google_cloud_run_service" "ui" {
+  name     = "prod-codeway-case-ui"
+  location = "europe-west1"
+  project  = var.project_id
+
+  metadata {
+    annotations = {
+      "run.googleapis.com/ingress" = "all"
+    }
+  }
+
+  template {
+    spec {
+      containers {
+        image = var.ui_image_url
+
+        env {
+          name  = "VITE_FIREBASE_API_KEY"
+          value = var.firebase_api_key
+        }
+        env {
+          name  = "VITE_FIREBASE_AUTH_DOMAIN"
+          value = var.firebase_auth_domain
+        }
+        env {
+          name  = "VITE_FIREBASE_PROJECT_ID"
+          value = var.firebase_project_id
+        }
+        env {
+          name  = "VITE_FIREBASE_STORAGE_BUCKET"
+          value = var.firebase_storage_bucket
+        }
+        env {
+          name  = "VITE_FIREBASE_MESSAGING_SENDER_ID"
+          value = var.firebase_messaging_sender_id
+        }
+        env {
+          name  = "VITE_FIREBASE_APP_ID"
+          value = var.firebase_app_id
+        }
+        env {
+          name  = "VITE_API_TOKEN"
+          value = var.api_token
+        }
+        env {
+          name  = "VITE_BACKEND_URL"
+          value = google_cloud_run_service.server.status[0].url
+        }
+      }
+    }
+
+  }
+}
+
+# Grant unauthenticated access to frontend service
+resource "google_cloud_run_service_iam_binding" "unauthenticated_ui" {
+  location = "europe-west1"
+  project  = var.project_id
+  service  = google_cloud_run_service.ui.name
 
   role    = "roles/run.invoker"
   members = ["allUsers"]
