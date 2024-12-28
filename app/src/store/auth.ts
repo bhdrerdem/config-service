@@ -10,7 +10,7 @@ interface AuthState {
 
 export const useAuthStore = defineStore("user", {
   state: (): AuthState => ({
-    isLoading: false,
+    isLoading: true,
     user: null,
     error: "",
   }),

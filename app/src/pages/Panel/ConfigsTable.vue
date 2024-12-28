@@ -26,7 +26,9 @@
       </tr>
     </thead>
     <tbody>
+      <Spinner v-if="isLoading" />
       <ConfigRow
+        v-else
         v-for="(config, index) in sortedConfigs"
         :key="index"
         :config="config"
@@ -43,8 +45,9 @@ import { useConfig } from "../../composables/useConfig";
 import { computed, onMounted, ref } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import Spinner from "../../components/Spinner.vue";
 
-const { configurations, fetchConfigurations } = useConfig();
+const { configurations, fetchConfigurations, isLoading } = useConfig();
 
 const sortOrder = ref("desc");
 const toggleSortOrder = () => {

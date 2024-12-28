@@ -14,6 +14,7 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     router.push("/");
   }
+  useAuth().setIsLoading(false);
 });
 
 const app = createApp(App);

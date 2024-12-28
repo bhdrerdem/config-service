@@ -18,11 +18,16 @@ export function useAuth() {
     authStore.setUser(user);
   }
 
+  function setIsLoading(isLoading: boolean) {
+    authStore.isLoading = isLoading;
+  }
+
   return {
     user,
     isLoading,
     signin,
     signout,
     setUser,
+    setIsLoading,
   };
 }
