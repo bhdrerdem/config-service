@@ -13,7 +13,7 @@ jobs:
     env:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      SERVICE_NAME: ci-cloud-run-ui
+      SERVICE_NAME: prod-codeway-case-ui
       REGION: europe-west1
       REPO: codeway-case-ui
       IMAGE_NAME: app
