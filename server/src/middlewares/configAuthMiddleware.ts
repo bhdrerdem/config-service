@@ -1,22 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import config from "../config";
+import admin from "firebase-admin";
 
 export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  next();
-  // const token = req.headers.authorization || null;
-  // if (!token) {
-  //   return res.status(401).json({ error: "Authorization token is required." });
-  // }
-  // try {
-  //   await validateToken(req.method, token);
-  //   next();
-  // } catch (error) {
-  //   return res.status(401).json({ error: "Unauthorized" });
-  // }
+  const token = req.headers.authorization || null;
+  if (!token) {
+    return res.status(401).json({ error: "Authorization token is required." });
+  }
+  try {
+    await validateToken(req.method, token);
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 };
 
 const validateToken = async (method: string, token: string): Promise<void> => {
@@ -28,7 +28,7 @@ const validateToken = async (method: string, token: string): Promise<void> => {
 };
 
 const verifyIdToken = async (token: string) => {
-  // TODO: Implement Firebase Admin SDK to verify ID token
+  await admin.auth().verifyIdToken(token);
 };
 
 const verifyApiToken = (token: string) => {
