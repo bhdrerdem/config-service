@@ -4,7 +4,7 @@
       <img src="@/assets/icon.png" alt="Codeway Logo" />
     </div>
 
-    <div class="header-user" @click="toggleSignout">
+    <div class="header-user" @click.stop="toggleSignout">
       <FontAwesomeIcon :icon="faUser" />
       <FontAwesomeIcon :icon="faCaretDown" v-if="showSignout === false" />
       <FontAwesomeIcon :icon="faCaretUp" v-else />
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
   faUser,
@@ -41,6 +41,21 @@ const handleSignout = async () => {
     console.error("failed to signout");
   }
 };
+
+const handleClickOutside = (event) => {
+  const dropdown = document.querySelector(".signout-dropdown");
+  if (dropdown && !dropdown.contains(event.target)) {
+    showSignout.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <style scoped>
