@@ -29,7 +29,7 @@
     </td>
     <td>
       <div class="action-btn-container">
-        <ActionButton text="Add" kind="secondary" :onClick="handleCreate" />
+        <ActionButton text="Add" kind="info" :onClick="handleCreate" />
       </div>
     </td>
   </tr>

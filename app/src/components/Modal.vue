@@ -13,7 +13,7 @@
             id="parameterKey"
             placeholder="Edit parameter key"
             v-model="editedConfig.parameterKey"
-            style="background-color: #fff"
+            style="background-color: #fff; color: #000"
             required
           />
 
@@ -23,7 +23,7 @@
             id="value"
             placeholder="value"
             v-model="editedConfig.value"
-            style="background-color: #fff"
+            style="background-color: #fff; color: #000"
             required
           />
 
@@ -32,7 +32,7 @@
             type="text"
             id="description"
             placeholder="Edit description"
-            style="background-color: #fff"
+            style="background-color: #fff; color: #000"
             v-model="editedConfig.description"
           />
 

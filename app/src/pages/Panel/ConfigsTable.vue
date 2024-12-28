@@ -8,7 +8,7 @@
         <th class="table-title">
           <h3>Value</h3>
         </th>
-        <th class="table-title">
+        <th class="table-title" style="width: 30%;">
           <h3>Description</h3>
         </th>
         <th class="table-title" @click="toggleSortOrder">
@@ -92,6 +92,12 @@ onMounted(async () => {
     width: 100%;
     padding: 24px 80px 24px 24px;
   }
+}
+
+.table-view th,
+.table-view td {
+  width: auto;
+  min-width: 200px;
 }
 
 .table-title h3 {

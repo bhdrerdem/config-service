@@ -2,7 +2,7 @@
   <tr class="config-row">
     <td class="config-data">{{ config.parameterKey }}</td>
     <td class="config-data">{{ config.value }}</td>
-    <td class="config-data">{{ config.description }}</td>
+    <td class="config-data" style="width: 30%">{{ config.description }}</td>
     <td class="config-data">{{ formattedCreatedAt }}</td>
     <td>
       <div class="action-btn-container">

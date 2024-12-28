@@ -48,8 +48,8 @@ const handleClick = (event) => {
 .btn-action {
   cursor: pointer;
   border-radius: 8px;
-  height: 35px;
-  width: 70px;
+  height: 32px;
+  padding: 0px 15px;
   color: #fff;
   border: none;
   box-sizing: border-box;
@@ -67,6 +67,13 @@ const handleClick = (event) => {
 }
 .btn-kind-secondary:hover {
   background: #2a3fa9;
+}
+
+.btn-kind-info {
+  background: linear-gradient(to top right, #05a8e8, #11e6c9);
+}
+.btn-kind-info:hover {
+  background: #05a8e8;
 }
 
 .btn-full-width {
