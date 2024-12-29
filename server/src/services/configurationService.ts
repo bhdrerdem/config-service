@@ -3,10 +3,14 @@ import { Configuration } from "../models/Configuration";
 import { Firestore } from "../storage/DB";
 import { Redis } from "../storage/Redis";
 import { RestError } from "../errors/RestError";
+import audienceService from "./audienceService";
+import { Audience } from "../models/Audience";
+import { ConfigOverride } from "../models/ConfigOverride";
 
 const CACHE_CONFIG_NAME = "configuration";
 const CACHE_TTL = 60 * 60;
 const DB_CONFIG_COLLECTION = "configurations";
+const DB_OVERRIDE_COLLECTION = "overrides";
 
 const create = async (configuration: Configuration): Promise<Configuration> => {
   const db = Firestore.getInstance();
@@ -29,7 +33,10 @@ const create = async (configuration: Configuration): Promise<Configuration> => {
   return configuration;
 };
 
-const getById = async (id: string): Promise<Configuration> => {
+const getById = async (
+  id: string,
+  audience: Audience | null = null
+): Promise<Configuration | null> => {
   const cache = Redis.getInstance();
   const db = Firestore.getInstance();
 
@@ -50,9 +57,16 @@ const getById = async (id: string): Promise<Configuration> => {
 
   const configuration = Configuration.fromDB(configDoc.data(), configDoc.id);
 
+  if (audience) {
+    const overrideValue = await getOverrideValue(configuration, audience);
+    if (overrideValue) {
+      configuration.value = overrideValue;
+    }
+  }
+
   try {
     await cache.set(
-      `${CACHE_CONFIG_NAME}:${id}`,
+      `${CACHE_CONFIG_NAME}:${id}:${audience?.name || "default"}`,
       JSON.stringify(configuration.toObject()),
       CACHE_TTL
     );
@@ -106,7 +120,9 @@ const remove = async (id: string): Promise<void> => {
   }
 };
 
-const getAll = async (): Promise<Configuration[]> => {
+const getAll = async (
+  audience: Audience | null = null
+): Promise<Configuration[]> => {
   const db = Firestore.getInstance();
 
   const configDocs = await db.get(DB_CONFIG_COLLECTION);
@@ -118,25 +134,125 @@ const getAll = async (): Promise<Configuration[]> => {
     configurations.push(configuration);
   });
 
+  if (audience) {
+    const overrides = await getAllOverrides(audience);
+    overrides.forEach((value, key) => {
+      const config = configurations.find((c) => c.id === key);
+      if (config) {
+        config.value = value;
+      }
+    });
+  }
+
   return configurations;
 };
 
-const getAllForMobile = async (): Promise<Map<string, string>> => {
+const getAllForMobile = async (
+  audience: Audience | null = null
+): Promise<Map<string, string>> => {
   const db = Firestore.getInstance();
 
-  const configDocs = await db.get(DB_CONFIG_COLLECTION, [
-    "parameterKey",
-    "value",
-  ]);
+  const configurations = await getAll(audience);
 
-  const mobileConfigs = new Map<string, string>();
-
-  configDocs.forEach((doc) => {
-    const configuration = Configuration.fromDB(doc.data(), doc.id);
-    mobileConfigs.set(configuration.parameterKey, configuration.value);
+  const configMap = new Map<string, string>();
+  configurations.forEach((config) => {
+    configMap.set(config.parameterKey, config.value);
   });
 
-  return mobileConfigs;
+  return configMap;
+};
+
+const getOverrideValue = async (
+  configuration: Configuration,
+  audience: Audience
+): Promise<string | null> => {
+  const db = Firestore.getInstance();
+
+  const overrideDoc = await db.client
+    .collection(DB_OVERRIDE_COLLECTION)
+    .where(
+      "audienceRef",
+      "==",
+      db.client.collection("audiences").doc(audience.name)
+    )
+    .where(
+      "configRef",
+      "==",
+      db.client.collection("configurations").doc(configuration.id!)
+    )
+    .get();
+
+  if (overrideDoc.empty) {
+    return null;
+  }
+
+  return overrideDoc.docs[0].data().value;
+};
+
+const getAllOverrides = async (
+  audience: Audience
+): Promise<Map<string, string>> => {
+  const db = Firestore.getInstance();
+
+  const overrideDocs = await db.client
+    .collection(DB_OVERRIDE_COLLECTION)
+    .where(
+      "audienceRef",
+      "==",
+      db.client.collection("audiences").doc(audience.name)
+    )
+    .get();
+
+  const overrides = new Map<string, string>();
+
+  overrideDocs.forEach((doc) => {
+    const override = doc.data();
+    overrides.set(override.configRef.id, override.value);
+  });
+
+  return overrides;
+};
+
+const createOverride = async (
+  configuration: Configuration,
+  audience: Audience,
+  value: string
+) => {
+  const db = Firestore.getInstance();
+
+  const overrideRef = await db.create(DB_OVERRIDE_COLLECTION, {
+    audienceRef: db.client.collection("audiences").doc(audience.name),
+    configRef: db.client.collection("configurations").doc(configuration.id!),
+    value,
+  });
+
+  return ConfigOverride.fromPlain({
+    id: overrideRef.id,
+    audienceId: audience.name,
+    configurationId: configuration.id!,
+    value,
+  });
+};
+
+const getOverrideById = async (id: string) => {
+  const db = Firestore.getInstance();
+
+  const overrideDoc = await db.getById(DB_OVERRIDE_COLLECTION, id);
+  if (!overrideDoc.exists) {
+    throw new RestError(`Override ${id} not found`, 404);
+  }
+
+  return ConfigOverride.fromDB(overrideDoc.data(), overrideDoc.id);
+};
+
+const updateOverride = async (override: ConfigOverride) => {
+  const db = Firestore.getInstance();
+  await db.update(DB_OVERRIDE_COLLECTION, override.id!, override.toObject());
+};
+
+const removeOverride = async (id: string) => {
+  const db = Firestore.getInstance();
+  await db.delete(DB_OVERRIDE_COLLECTION, id);
 };
 
 export default {
@@ -146,4 +262,8 @@ export default {
   remove,
   getAll,
   getAllForMobile,
+  createOverride,
+  getOverrideById,
+  updateOverride,
+  removeOverride,
 };

@@ -6,7 +6,7 @@ export class Firestore {
   private static instance: Firestore;
   private config: FirebaseConfig;
   private health: boolean = false;
-  private client!: FirebaseFirestore.Firestore;
+  public client!: FirebaseFirestore.Firestore;
 
   constructor(config: FirebaseConfig) {
     this.config = config;
@@ -46,6 +46,10 @@ export class Firestore {
     return await this.client.collection(collection).add(data);
   }
 
+  public async createWithId(collection: string, id: string, data: any) {
+    return await this.client.collection(collection).doc(id).set(data);
+  }
+
   public async update(collection: string, id: string, data: any) {
     return await this.client.collection(collection).doc(id).update(data);
   }
@@ -61,9 +65,7 @@ export class Firestore {
       field: string;
       op: FirebaseFirestore.WhereFilterOp;
       value: any;
-    }>,
-    page?: number,
-    limit?: number
+    }>
   ) {
     let query: FirebaseFirestore.Query = this.client.collection(collection);
 
@@ -77,17 +79,14 @@ export class Firestore {
       });
     }
 
-    // TODO: pagination might be needed
-    // if (page) {
-    //   query = query.startAfter(page);
-    // }
-
-    // query = query.limit(limit);
-
     return await query.get();
   }
 
   public async getById(collection: string, id: string) {
     return await this.client.collection(collection).doc(id).get();
+  }
+
+  public getRef(collection: string, id: string) {
+    return this.client.collection(collection).doc(id);
   }
 }
