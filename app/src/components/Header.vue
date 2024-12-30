@@ -9,7 +9,7 @@
         />
       </div>
 
-      <div class="header-actions">
+      <div v-if="!isMobileView" class="header-actions">
         <div class="header-action">
           <span class="header-route-link" @click="$router.push('/audiences')"
             >AUDIENCES</span
@@ -44,8 +44,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../composables/useAuth";
 import ActionButton from "./Button.vue";
+import { useViewport } from "../composables/useViewport";
 
 const { signout } = useAuth();
+const { isMobileView } = useViewport();
 
 const showSignout = ref(false);
 

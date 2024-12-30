@@ -1,5 +1,27 @@
 <template>
-  <tr class="config-row">
+  <div v-if="isMobileView" class="config-card">
+    <div class="config-cell">
+      <h3>Parameter Key:</h3>
+      <span class="config-data">{{ config.parameterKey }}</span>
+    </div>
+    <div class="config-cell">
+      <h3>Value:</h3>
+      <span class="config-data">{{ config.value }}</span>
+    </div>
+    <div class="config-cell">
+      <h3>Description:</h3>
+      <span class="config-data">{{ config.description }}</span>
+    </div>
+    <div class="config-cell">
+      <h3>Create Date:</h3>
+      <span class="config-data">{{ formattedCreatedAt }}</span>
+    </div>
+    <div class="action-btn-container">
+      <ActionButton text="Edit" kind="secondary" :onClick="openEditModal" />
+      <ActionButton text="Del" kind="primary" :onClick="handleDelete" />
+    </div>
+  </div>
+  <tr v-else class="config-row">
     <td class="config-data">{{ config.parameterKey }}</td>
     <td class="config-data">{{ config.value }}</td>
     <td class="config-data" style="width: 30%">{{ config.description }}</td>
@@ -24,6 +46,9 @@ import { computed, ref } from "vue";
 import ActionButton from "../../../components/Button.vue";
 import { useConfig } from "../../../composables/useConfig";
 import EditModal from "./EditModal.vue";
+import { useViewport } from "../../../composables/useViewport";
+
+const { isMobileView } = useViewport();
 
 const props = defineProps({
   config: {

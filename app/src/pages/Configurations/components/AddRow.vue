@@ -1,5 +1,29 @@
 <template>
-  <tr class="config-input-row">
+  <div v-if="isMobileView" class="config-input-card">
+    <div class="config-cell">
+      <Input
+        id="parameter_key"
+        placeholder="New Parameter"
+        type="text"
+        v-model="parameterKey"
+      />
+    </div>
+    <div class="config-cell">
+      <Input id="value" placeholder="New Value" type="text" v-model="value" />
+    </div>
+    <div class="config-cell">
+      <Input
+        id="description"
+        placeholder="New Description"
+        type="text"
+        v-model="description"
+      />
+    </div>
+    <div class="mobile-action-btn-container">
+      <ActionButton text="Add" kind="info" :onClick="handleCreate" />
+    </div>
+  </div>
+  <tr v-else class="config-input-row">
     <td>
       <Input
         id="parameter_key"
@@ -40,6 +64,9 @@ import { ref } from "vue";
 import Input from "../../../components/Input.vue";
 import ActionButton from "../../../components/Button.vue";
 import { useConfig } from "../../../composables/useConfig";
+import { useViewport } from "../../../composables/useViewport";
+
+const { isMobileView } = useViewport();
 
 const parameterKey = ref("");
 const value = ref("");
@@ -67,46 +94,31 @@ const handleCreate = async () => {
   width: 90%;
 }
 
-@media only screen and (max-width: 768px) {
-  .config-input-row {
-    display: none;
-  }
-  .config-input-card {
-    background: inherit;
-    border-radius: 10px;
-    padding: 20px;
-    border: 1px solid;
-    border-color: white;
-    margin-bottom: 20px;
-    color: white;
-  }
-
-  .config-input {
-    width: 80%;
-  }
-
-  .config-cell {
-    margin-bottom: 8px;
-    width: 100%;
-  }
-
-  .action-btn-container {
-    text-align: center;
-  }
+.config-input-row {
+  height: 30px;
+  margin-bottom: 10px;
 }
-@media only screen and (min-width: 769px) {
-  .config-input-card {
-    display: none;
-  }
-  .config-input-row {
-    height: 30px;
-    margin-bottom: 10px;
-  }
 
-  .action-btn-container {
-    display: flex;
-    gap: 10px;
-    max-width: 160px;
-  }
+.config-input-card {
+  background: inherit;
+  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid;
+  border-color: white;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.config-input {
+  width: 80%;
+}
+
+.config-cell {
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.mobile-action-btn-container {
+  text-align: center;
 }
 </style>

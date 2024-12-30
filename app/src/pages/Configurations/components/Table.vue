@@ -1,5 +1,16 @@
 <template>
-  <table class="table-view">
+  <div v-if="isMobileView" class="card-view">
+    <Spinner v-if="isLoading" />
+    <Row
+      v-else
+      v-for="(config, index) in sortedConfigs"
+      :key="index"
+      :config="config"
+      :hideButtons="!!selectedOption"
+    />
+    <AddRow v-if="!selectedOption" />
+  </div>
+  <table v-else class="table-view">
     <thead>
       <tr>
         <th class="table-title">
@@ -56,9 +67,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "../../../components/Spinner.vue";
 import { useAudience } from "../../../composables/useAudience";
+import { useViewport } from "../../../composables/useViewport";
 
 const { configurations, fetchConfigurations, isLoading } = useConfig();
 const { audiences, fetchAudiences } = useAudience();
+const { isMobileView } = useViewport();
 
 const sortOrder = ref("desc");
 const toggleSortOrder = () => {
@@ -107,29 +120,19 @@ watch(selectedOption, async (newAudience) => {
   flex-direction: column;
 }
 
-@media only screen and (max-width: 768px) {
-  .table-view {
-    display: none;
-  }
-  .card-view {
-    display: flex;
-    flex-direction: column;
-    padding: 8px;
-  }
+.card-view {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
 }
-@media only screen and (min-width: 769px) {
-  .card-view {
-    display: none;
-  }
-  .table-view {
-    width: 100%;
-    padding: 24px 80px 24px 24px;
-  }
+
+.table-view {
+  width: 100%;
+  padding: 24px 80px 24px 24px;
 }
 
 .table-view th,
 .table-view td {
-  width: auto;
   min-width: 200px;
 }
 
