@@ -42,7 +42,13 @@ const closeEditModal = () => {
 };
 
 const handleDelete = async () => {
-  await useAudience().deleteAudience(props.audience);
+  if (confirm("Are you sure you want to delete this audience?")) {
+    try {
+      await useAudience().deleteAudience(props.audience);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 };
 </script>
 

@@ -76,8 +76,12 @@ const emitClose = () => {
 };
 
 const saveChanges = async () => {
-  await useConfig().updateConfiguration(editedConfig.value);
-  emitClose();
+  try {
+    await useConfig().updateConfiguration(editedConfig.value);
+    emitClose();
+  } catch (error) {
+    alert(error.message);
+  }
 };
 </script>
 

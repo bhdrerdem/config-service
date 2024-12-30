@@ -36,7 +36,11 @@ import { useOverride } from "../../composables/useOverride";
 const { customOverrides, fetchOverrides, isLoading } = useOverride();
 
 onMounted(async () => {
-  await fetchOverrides();
+  try {
+    await fetchOverrides();
+  } catch (error) {
+    alert(error.message);
+  }
 });
 </script>
 

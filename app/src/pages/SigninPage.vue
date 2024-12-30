@@ -7,6 +7,9 @@
       <h3>Please sign in</h3>
     </div>
     <div class="signin-container">
+      <div v-if="error" class="error-message">
+        {{ error }}
+      </div>
       <form @submit.prevent="handleSignin">
         <div class="input-container">
           <Input
@@ -34,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import Button from "../components/Button.vue";
 import Input from "../components/Input.vue";
 import { useAuth } from "../composables/useAuth";
@@ -42,12 +45,11 @@ import { useAuth } from "../composables/useAuth";
 const email = ref("");
 const password = ref("");
 
-const { signin, isLoading } = useAuth();
+const { signin, isLoading, error } = useAuth();
 
 const handleSignin = async () => {
   try {
     await signin(email.value, password.value);
-    console.log("Login successful!");
   } catch (error) {
     console.error("Login failed:", error);
   }
@@ -95,5 +97,11 @@ footer {
   margin-top: 50px;
   margin-bottom: 50px;
   font-size: small;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+  text-align: center;
 }
 </style>

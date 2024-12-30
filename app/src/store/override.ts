@@ -39,9 +39,14 @@ export const useOverrideStore = defineStore("override", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to fetch overrides";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async updateOverride(override: Override) {
       this.isLoading = true;
@@ -64,9 +69,15 @@ export const useOverrideStore = defineStore("override", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to update override";
+        console.log(error);
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async createOverride(override: Override) {
       this.isLoading = true;
@@ -86,9 +97,14 @@ export const useOverrideStore = defineStore("override", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to create audience";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async deleteOverride(override: Override) {
       this.isLoading = true;
@@ -99,9 +115,13 @@ export const useOverrideStore = defineStore("override", {
           this.overrides.splice(index, 1);
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to delete override";
+        this.error =
+          error.response?.data?.error ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
   },
 });

@@ -52,9 +52,14 @@ export const useConfigurationStore = defineStore("configuration", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to fetch configurations";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async updateConfiguration(config: Configuration) {
       this.isLoading = true;
@@ -82,9 +87,14 @@ export const useConfigurationStore = defineStore("configuration", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to update configuration";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async createConfiguration(config: Configuration) {
       this.isLoading = true;
@@ -107,9 +117,14 @@ export const useConfigurationStore = defineStore("configuration", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to create configuration";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async deleteConfiguration(config: Configuration) {
       this.isLoading = true;
@@ -120,9 +135,14 @@ export const useConfigurationStore = defineStore("configuration", {
           this.configurations.splice(index, 1);
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to delete configuration";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
   },
 });

@@ -33,7 +33,11 @@ import { useAudience } from "../../composables/useAudience";
 const { audiences, fetchAudiences, isLoading } = useAudience();
 
 onMounted(async () => {
-  await fetchAudiences();
+  try {
+    await fetchAudiences();
+  } catch (error) {
+    alert(error.message);
+  }
 });
 </script>
 

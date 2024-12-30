@@ -52,24 +52,32 @@ const selectedConfig = ref("");
 const value = ref("");
 
 const handleCreate = async () => {
-  await useOverride().createOverride({
-    audience: {
-      name: selectedAudience.value,
-    },
-    configuration: {
-      id: selectedConfig.value,
-    },
-    value: value.value,
-  });
+  try {
+    await useOverride().createOverride({
+      audience: {
+        name: selectedAudience.value,
+      },
+      configuration: {
+        id: selectedConfig.value,
+      },
+      value: value.value,
+    });
 
-  selectedAudience.value = "";
-  selectedConfig.value = "";
-  value.value = "";
+    selectedAudience.value = "";
+    selectedConfig.value = "";
+    value.value = "";
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 onMounted(async () => {
-  await useAudience().fetchAudiences();
-  await useConfig().fetchConfigurations();
+  try {
+    await useAudience().fetchAudiences();
+    await useConfig().fetchConfigurations();
+  } catch (error) {
+    alert(error.message);
+  }
 });
 </script>
 

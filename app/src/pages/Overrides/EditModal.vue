@@ -79,8 +79,12 @@ const emitClose = () => {
 };
 
 const saveChanges = async () => {
-  await useOverride().updateOverride(editedOverride.value);
-  emitClose();
+  try {
+    await useOverride().updateOverride(editedOverride.value);
+    emitClose();
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 const submitForm = () => {

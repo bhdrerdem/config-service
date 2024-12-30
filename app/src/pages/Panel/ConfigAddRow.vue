@@ -46,15 +46,19 @@ const value = ref("");
 const description = ref("");
 
 const handleCreate = async () => {
-  await useConfig().createConfiguration({
-    parameterKey: parameterKey.value,
-    value: value.value,
-    description: description.value,
-  });
+  try {
+    await useConfig().createConfiguration({
+      parameterKey: parameterKey.value,
+      value: value.value,
+      description: description.value,
+    });
 
-  parameterKey.value = "";
-  value.value = "";
-  description.value = "";
+    parameterKey.value = "";
+    value.value = "";
+    description.value = "";
+  } catch (error) {
+    alert(error.message);
+  }
 };
 </script>
 

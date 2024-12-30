@@ -43,11 +43,6 @@ const closeEditModal = () => {
   isEditModalOpen.value = false;
 };
 
-const saveChanges = async (editedConfig) => {
-  await useConfig().updateConfiguration(editedConfig);
-  closeEditModal();
-};
-
 const formattedCreatedAt = computed(() => {
   return new Intl.DateTimeFormat("default", {
     year: "numeric",
@@ -59,7 +54,13 @@ const formattedCreatedAt = computed(() => {
 });
 
 const handleDelete = async () => {
-  await useConfig().deleteConfiguration(props.config);
+  if (confirm("Are you sure you want to delete this configuration?")) {
+    try {
+      await useConfig().deleteConfiguration(props.config);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 };
 </script>
 

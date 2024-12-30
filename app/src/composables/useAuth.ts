@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/auth";
 import { type User } from "firebase/auth";
 export function useAuth() {
   const authStore = useAuthStore();
-  const { isLoading, user } = storeToRefs(authStore);
+  const { isLoading, user, error } = storeToRefs(authStore);
 
   async function signin(email: string, password: string) {
     await authStore.signin(email, password);
@@ -25,6 +25,7 @@ export function useAuth() {
   return {
     user,
     isLoading,
+    error,
     signin,
     signout,
     setUser,

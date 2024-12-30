@@ -67,8 +67,12 @@ const emitClose = () => {
 };
 
 const saveChanges = async () => {
-  await useAudience().updateAudience(editedAudience.value);
-  emitClose();
+  try {
+    await useAudience().updateAudience(editedAudience.value);
+    emitClose();
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 const submitForm = () => {

@@ -36,13 +36,17 @@ const audienceName = ref("");
 const audienceDescription = ref("");
 
 const handleCreate = async () => {
-  await useAudience().createAudience({
-    name: audienceName.value,
-    description: audienceDescription.value,
-  });
+  try {
+    await useAudience().createAudience({
+      name: audienceName.value,
+      description: audienceDescription.value,
+    });
 
-  audienceName.value = "";
-  audienceDescription.value = "";
+    audienceName.value = "";
+    audienceDescription.value = "";
+  } catch (error) {
+    alert(error.message);
+  }
 };
 </script>
 

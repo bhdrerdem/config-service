@@ -33,9 +33,14 @@ export const useAudienceStore = defineStore("audience", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to fetch audiences";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async updateAudience(audience: Audience) {
       this.isLoading = true;
@@ -58,9 +63,14 @@ export const useAudienceStore = defineStore("audience", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to update audience";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async createAudience(audience: Audience) {
       this.isLoading = true;
@@ -78,9 +88,14 @@ export const useAudienceStore = defineStore("audience", {
           throw new Error("Invalid response structure");
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to create audience";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async deleteAudience(audience: Audience) {
       this.isLoading = true;
@@ -91,9 +106,14 @@ export const useAudienceStore = defineStore("audience", {
           this.audiences.splice(index, 1);
         }
       } catch (error: any) {
-        this.error = error?.message || "Failed to delete audience";
+        this.error =
+          error.response?.data?.error ||
+          error.message ||
+          "Something went wrong, please try again";
+        throw new Error(this.error);
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
   },
 });

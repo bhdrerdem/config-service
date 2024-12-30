@@ -43,7 +43,13 @@ const closeEditModal = () => {
 };
 
 const handleDelete = async () => {
-  await useOverride().deleteOverride(props.override);
+  if (confirm("Are you sure you want to delete this override?")) {
+    try {
+      await useOverride().deleteOverride(props.override);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 };
 </script>
 

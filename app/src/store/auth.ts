@@ -27,18 +27,24 @@ export const useAuthStore = defineStore("user", {
       try {
         await signInWithEmailAndPassword(auth, email, password);
       } catch (error: any) {
-        this.error = error?.message || "Failed to sign in";
+        if (error?.code == "auth/invalid-credential") {
+          this.error = "Invalid email or password";
+        } else {
+          this.error = error?.message || "Failed to sign in";
+        }
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
     async signout() {
       this.isLoading = true;
       try {
         await auth.signOut();
       } catch (error: any) {
-        this.error = error?.message || "Failed to sign out";
+        throw new Error(error?.message || "Failed to sign out");
+      } finally {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
   },
 });

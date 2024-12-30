@@ -83,13 +83,20 @@ const audienceOptions = computed(() => {
 });
 
 onMounted(async () => {
-  await fetchAudiences();
-  await fetchConfigurations(selectedOption.value);
+  try {
+    await fetchAudiences();
+    await fetchConfigurations(selectedOption.value);
+  } catch (error) {
+    alert(error.message);
+  }
 });
 
 watch(selectedOption, async (newAudience) => {
-  console.log(newAudience);
-  await fetchConfigurations(newAudience);
+  try {
+    await fetchConfigurations(newAudience);
+  } catch (error) {
+    alert(error.message);
+  }
 });
 </script>
 
