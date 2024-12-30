@@ -6,7 +6,7 @@ export class Firestore {
   private static instance: Firestore;
   private config: FirebaseConfig;
   private health: boolean = false;
-  public client!: FirebaseFirestore.Firestore;
+  private client!: FirebaseFirestore.Firestore;
 
   constructor(config: FirebaseConfig) {
     this.config = config;
