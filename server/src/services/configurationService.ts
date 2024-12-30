@@ -28,6 +28,8 @@ const create = async (configuration: Configuration): Promise<Configuration> => {
 
   configuration.id = configRef.id;
 
+  await invalidateCache();
+
   return configuration;
 };
 
@@ -39,7 +41,10 @@ const getById = async (
   const db = Firestore.getInstance();
 
   try {
-    const cachedConfig = await cache.get(`${CACHE_CONFIG_PREFIX}:${id}`);
+    const cachedConfig = await cache.hget(
+      `${CACHE_CONFIG_PREFIX}:${id}`,
+      audience?.name ?? "default"
+    );
     if (cachedConfig) {
       return Configuration.fromPlain(JSON.parse(cachedConfig));
     }
@@ -62,10 +67,10 @@ const getById = async (
   }
 
   try {
-    await cache.set(
-      `${CACHE_CONFIG_PREFIX}:${id}:${audience?.name || "default"}`,
-      JSON.stringify(configuration.toObject()),
-      CACHE_TTL
+    await cache.hset(
+      `${CACHE_CONFIG_PREFIX}:${id}`,
+      audience?.name ?? "default",
+      JSON.stringify(configuration.toObject())
     );
   } catch (error) {
     console.error("Failed to cache config", error);
@@ -97,7 +102,6 @@ const update = async (configuration: Configuration): Promise<Configuration> => {
 
 const remove = async (configuration: Configuration): Promise<void> => {
   const db = Firestore.getInstance();
-  const cache = Redis.getInstance();
 
   await db.delete(DB_CONFIG_COLLECTION, configuration.id!);
 
@@ -117,10 +121,11 @@ const getAll = async (
   const db = Firestore.getInstance();
   const redis = Redis.getInstance();
 
-  const cacheKey = `${CACHE_CONFIG_ALL_PREFIX}:${audience?.name || "default"}`;
-
   try {
-    const cachedConfigs = await redis.get(cacheKey);
+    const cachedConfigs = await redis.hget(
+      CACHE_CONFIG_ALL_PREFIX,
+      audience?.name ?? "default"
+    );
     if (cachedConfigs) {
       const configurations = JSON.parse(cachedConfigs);
       if (configurations.length > 0) {
@@ -153,7 +158,11 @@ const getAll = async (
   }
 
   try {
-    await redis.set(cacheKey, JSON.stringify(configurations), CACHE_TTL);
+    await redis.hset(
+      `${CACHE_CONFIG_ALL_PREFIX}`,
+      audience?.name ?? "default",
+      JSON.stringify(configurations.map((config) => config.toObject()))
+    );
   } catch (error) {
     console.error("Failed to cache configs", error);
   }
@@ -200,15 +209,26 @@ const getByParameterKey = async (
 };
 
 const invalidateCache = async (
-  configuration: Configuration | null = null
+  configuration: Configuration | null = null,
+  audience: Audience | null = null
 ): Promise<void> => {
   const cache = Redis.getInstance();
 
   try {
-    if (configuration) {
+    if (!configuration && !audience) {
+      await cache.del(CACHE_CONFIG_ALL_PREFIX);
+    } else if (!configuration && audience) {
+      await cache.hdel(CACHE_CONFIG_ALL_PREFIX, audience.name);
+    } else if (configuration && !audience) {
       await cache.del(`${CACHE_CONFIG_PREFIX}:${configuration.id}`);
+      await cache.del(CACHE_CONFIG_ALL_PREFIX);
+    } else if (configuration && audience) {
+      await cache.hdel(
+        `${CACHE_CONFIG_PREFIX}:${configuration.id}`,
+        audience.name
+      );
+      await cache.hdel(CACHE_CONFIG_ALL_PREFIX, audience.name);
     }
-    await cache.del(CACHE_CONFIG_ALL_PREFIX);
   } catch (error) {
     console.error("Failed to invalidate config cache", error);
   }

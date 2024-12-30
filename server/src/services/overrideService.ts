@@ -78,8 +78,16 @@ const getAll = async (
   const overrides: ConfigOverride[] = [];
 
   for (const doc of overrideDocs.docs) {
-    const override = await ConfigOverride.fromDB(doc.data(), doc.id, includes);
-    overrides.push(override);
+    try {
+      const override = await ConfigOverride.fromDB(
+        doc.data(),
+        doc.id,
+        includes
+      );
+      overrides.push(override);
+    } catch (error) {
+      console.error("Failed to transform override", error);
+    }
   }
 
   return overrides;
@@ -95,6 +103,11 @@ const create = async (override: ConfigOverride) => {
   });
 
   override.id = overrideRef.id;
+
+  await configurationService.invalidateCache(
+    override.configuration,
+    override.audience
+  );
 
   return override;
 };

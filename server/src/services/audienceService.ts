@@ -3,6 +3,7 @@ import { Firestore } from "../storage/DB";
 import { Redis } from "../storage/Redis";
 import { RestError } from "../errors/RestError";
 import configurationService from "./configurationService";
+import overrideService from "./overrideService";
 
 const CACHE_AUDIENCE_NAME = "audience";
 const CACHE_TTL = 60 * 60;
@@ -97,6 +98,22 @@ const remove = async (audience: Audience): Promise<void> => {
     await configurationService.invalidateCache();
   } catch (error) {
     console.error("Failed to delete audience from cache", error);
+  }
+
+  try {
+    const overrides = await overrideService.getAll(audience, undefined);
+    for (const override of overrides) {
+      try {
+        await overrideService.remove(override);
+      } catch (error) {
+        console.error(
+          "[audienceService.remove] Failed to remove override",
+          error
+        );
+      }
+    }
+  } catch (error) {
+    console.error("[audienceService.remove] Failed to get overrides", error);
   }
 };
 

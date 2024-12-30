@@ -88,8 +88,13 @@ export class Redis {
     return await this.client.hGet(key, field);
   }
 
-  public async hset(key: string, field: string, value: any) {
-    return await this.client.hSet(key, field, value);
+  public async hset(key: string, field: string, value: any, expire?: number) {
+    await this.client.hSet(key, field, value);
+    await this.client.expire(key, expire || 3600);
+  }
+
+  public async hdel(key: string, field: string) {
+    return await this.client.hDel(key, field);
   }
 
   public async del(key: string) {
