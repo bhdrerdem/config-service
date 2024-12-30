@@ -12,11 +12,14 @@ const create = async (req: Request, res: Response) => {
   const value = req.body.value as string;
 
   try {
-    let override = await ConfigOverride.fromPlain({
-      audience,
-      configuration,
-      value,
-    });
+    let override = await ConfigOverride.fromPlain(
+      {
+        audience,
+        configuration,
+        value,
+      },
+      ["audience", "configuration"]
+    );
 
     override = await overrideService.create(override);
     res.status(201).json(override.toObject());
@@ -42,6 +45,9 @@ const update = async (req: Request, res: Response) => {
 
   try {
     const override = await overrideService.getById(id);
+    if (!override) {
+      return res.status(404).json({ error: `Override ${id} not found` });
+    }
     override.value = value;
 
     await overrideService.update(override);
@@ -62,7 +68,12 @@ const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
-    await overrideService.remove(id);
+    const override = await overrideService.getById(id);
+    if (!override) {
+      return res.status(404).json({ error: `Override ${id} not found` });
+    }
+
+    await overrideService.remove(override);
     res.status(204).send();
   } catch (error) {
     if (error instanceof RestError) {
@@ -76,7 +87,10 @@ const remove = async (req: Request, res: Response) => {
 
 const getAll = async (req: Request, res: Response) => {
   try {
-    const overrides = await overrideService.getAllForUI();
+    const overrides = await overrideService.getAll(null, null, [
+      "audience",
+      "configuration",
+    ]);
     res.status(200).json(overrides.map((o) => o.toObject()));
   } catch (error) {
     if (error instanceof RestError) {

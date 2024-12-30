@@ -2,6 +2,7 @@ import { Audience } from "../models/Audience";
 import { Firestore } from "../storage/DB";
 import { Redis } from "../storage/Redis";
 import { RestError } from "../errors/RestError";
+import configurationService from "./configurationService";
 
 const CACHE_AUDIENCE_NAME = "audience";
 const CACHE_TTL = 60 * 60;
@@ -33,7 +34,6 @@ const getById = async (id: string): Promise<Audience | null> => {
   try {
     const cachedAudience = await cache.get(`${CACHE_AUDIENCE_NAME}:${id}`);
     if (cachedAudience) {
-      console.log("Got audience from cache");
       return Audience.fromPlain(JSON.parse(cachedAudience));
     }
   } catch (error) {
@@ -86,14 +86,15 @@ const update = async (audience: Audience): Promise<Audience> => {
   return audience;
 };
 
-const remove = async (id: string): Promise<void> => {
+const remove = async (audience: Audience): Promise<void> => {
   const db = Firestore.getInstance();
   const cache = Redis.getInstance();
 
-  await db.delete(DB_AUDIENCE_COLLECTION, id);
+  await db.delete(DB_AUDIENCE_COLLECTION, audience.name);
 
   try {
-    await cache.del(`${CACHE_AUDIENCE_NAME}:${id}`);
+    await cache.del(`${CACHE_AUDIENCE_NAME}:${audience.name}`);
+    await configurationService.invalidateCache();
   } catch (error) {
     console.error("Failed to delete audience from cache", error);
   }

@@ -5,10 +5,10 @@ import { RestError } from "../errors/RestError";
 import { Audience } from "../models/Audience";
 import overrideService from "./overrideService";
 
-const CACHE_CONFIG_NAME = "configuration";
+const CACHE_CONFIG_PREFIX = "configuration";
+const CACHE_CONFIG_ALL_PREFIX = `${CACHE_CONFIG_PREFIX}:all`;
 const CACHE_TTL = 60 * 60;
 const DB_CONFIG_COLLECTION = "configurations";
-const DB_OVERRIDE_COLLECTION = "overrides";
 
 const create = async (configuration: Configuration): Promise<Configuration> => {
   const db = Firestore.getInstance();
@@ -39,9 +39,8 @@ const getById = async (
   const db = Firestore.getInstance();
 
   try {
-    const cachedConfig = await cache.get(`${CACHE_CONFIG_NAME}:${id}`);
+    const cachedConfig = await cache.get(`${CACHE_CONFIG_PREFIX}:${id}`);
     if (cachedConfig) {
-      console.log("Got config from cache");
       return Configuration.fromPlain(JSON.parse(cachedConfig));
     }
   } catch (error) {
@@ -56,18 +55,15 @@ const getById = async (
   const configuration = Configuration.fromDB(configDoc.data(), configDoc.id);
 
   if (audience) {
-    const overrideValue = await overrideService.getValue(
-      configuration,
-      audience
-    );
-    if (overrideValue) {
-      configuration.value = overrideValue;
+    const override = await overrideService.getOne(configuration, audience);
+    if (override) {
+      configuration.value = override.value;
     }
   }
 
   try {
     await cache.set(
-      `${CACHE_CONFIG_NAME}:${id}:${audience?.name || "default"}`,
+      `${CACHE_CONFIG_PREFIX}:${id}:${audience?.name || "default"}`,
       JSON.stringify(configuration.toObject()),
       CACHE_TTL
     );
@@ -94,42 +90,51 @@ const update = async (configuration: Configuration): Promise<Configuration> => {
     version: configuration.version,
   });
 
-  try {
-    await cache.set(
-      `${CACHE_CONFIG_NAME}:${configuration.id}`,
-      JSON.stringify(configuration.toObject()),
-      CACHE_TTL
-    );
-    console.log("Updated cache");
-  } catch (error) {
-    console.error("Failed to update cache", error);
-  }
+  await invalidateCache(configuration);
 
   return configuration;
 };
 
-const remove = async (id: string): Promise<void> => {
+const remove = async (configuration: Configuration): Promise<void> => {
   const db = Firestore.getInstance();
   const cache = Redis.getInstance();
 
-  await db.delete(DB_CONFIG_COLLECTION, id);
+  await db.delete(DB_CONFIG_COLLECTION, configuration.id!);
+
+  await invalidateCache(configuration);
 
   try {
-    await cache.del(`${CACHE_CONFIG_NAME}:${id}`);
-  } catch (error) {
-    console.error("Failed to delete config from cache", error);
-  }
+    const overrides = await overrideService.getAll(undefined, configuration);
+    for (const override of overrides) {
+      await overrideService.remove(override);
+    }
+  } catch (error) {}
 };
 
 const getAll = async (
   audience: Audience | null = null
 ): Promise<Configuration[]> => {
   const db = Firestore.getInstance();
+  const redis = Redis.getInstance();
+
+  const cacheKey = `${CACHE_CONFIG_ALL_PREFIX}:${audience?.name || "default"}`;
+
+  try {
+    const cachedConfigs = await redis.get(cacheKey);
+    if (cachedConfigs) {
+      const configurations = JSON.parse(cachedConfigs);
+      if (configurations.length > 0) {
+        return configurations.map((config: any) =>
+          Configuration.fromPlain(config)
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Failed to get configs from cache", error);
+  }
 
   const configDocs = await db.get(DB_CONFIG_COLLECTION);
-
   const configurations: Configuration[] = [];
-
   configDocs.forEach((doc) => {
     const configuration = Configuration.fromDB(doc.data(), doc.id);
     configurations.push(configuration);
@@ -137,12 +142,20 @@ const getAll = async (
 
   if (audience) {
     const overrides = await overrideService.getAll(audience);
-    overrides.forEach((value, key) => {
-      const config = configurations.find((c) => c.id === key);
+    overrides.forEach((override, _) => {
+      const config = configurations.find(
+        (c) => c.id === override.configuration.id
+      );
       if (config) {
-        config.value = value;
+        config.value = override.value;
       }
     });
+  }
+
+  try {
+    await redis.set(cacheKey, JSON.stringify(configurations), CACHE_TTL);
+  } catch (error) {
+    console.error("Failed to cache configs", error);
   }
 
   return configurations;
@@ -151,8 +164,6 @@ const getAll = async (
 const getAllForMobile = async (
   audience: Audience | null = null
 ): Promise<Map<string, string>> => {
-  const db = Firestore.getInstance();
-
   const configurations = await getAll(audience);
 
   const configMap = new Map<string, string>();
@@ -163,6 +174,46 @@ const getAllForMobile = async (
   return configMap;
 };
 
+const getByParameterKey = async (
+  parameterKey: string
+): Promise<Configuration | null> => {
+  const db = Firestore.getInstance();
+
+  const configDocs = await db.get(
+    DB_CONFIG_COLLECTION,
+    [],
+    [
+      {
+        field: "parameterKey",
+        op: "==",
+        value: parameterKey,
+      },
+    ]
+  );
+
+  if (configDocs.empty) {
+    return null;
+  }
+
+  const doc = configDocs.docs[0];
+  return Configuration.fromDB(doc.data(), doc.id);
+};
+
+const invalidateCache = async (
+  configuration: Configuration | null = null
+): Promise<void> => {
+  const cache = Redis.getInstance();
+
+  try {
+    if (configuration) {
+      await cache.del(`${CACHE_CONFIG_PREFIX}:${configuration.id}`);
+    }
+    await cache.del(CACHE_CONFIG_ALL_PREFIX);
+  } catch (error) {
+    console.error("Failed to invalidate config cache", error);
+  }
+};
+
 export default {
   create,
   getById,
@@ -170,4 +221,6 @@ export default {
   remove,
   getAll,
   getAllForMobile,
+  getByParameterKey,
+  invalidateCache,
 };

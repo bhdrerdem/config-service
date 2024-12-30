@@ -67,26 +67,18 @@ export class Firestore {
       value: unknown;
     }>
   ) {
-    const converter = {
-      toFirestore: (data: any) => data,
-      fromFirestore: (snap: FirebaseFirestore.QueryDocumentSnapshot) =>
-        snap.data(),
-    };
+    let query = Firestore.getInstance().client.collection(
+      collection
+    ) as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
 
-    let query = this.client
-      .collection(collection)
-      .withConverter(
-        converter
-      ) as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
-
-    if (fields) {
+    if (fields && fields.length > 0) {
       query = query.select(...fields);
     }
 
-    if (filters) {
-      filters.forEach((filter) => {
+    if (filters && filters.length > 0) {
+      for (const filter of filters) {
         query = query.where(filter.field, filter.op, filter.value);
-      });
+      }
     }
 
     return await query.get();
@@ -96,7 +88,10 @@ export class Firestore {
     return await this.client.collection(collection).doc(id).get();
   }
 
-  public getRef(collection: string, id: string) {
-    return this.client.collection(collection).doc(id);
+  public getRef(
+    collection: string,
+    id: string
+  ): FirebaseFirestore.DocumentReference {
+    return Firestore.getInstance().client.collection(collection).doc(id);
   }
 }

@@ -20,9 +20,8 @@ export class Audience {
   @IsString({
     message: "Name must be a string without spaces and in uppercase",
   })
-  @Matches(/^[A-Z0-9_]+$/, {
-    message:
-      "Name must contain only uppercase letters, numbers and underscores",
+  @Matches(/^[a-zA-Z0-9_]+$/, {
+    message: "Name must contain only letters, numbers and underscores",
   })
   public name: string;
 

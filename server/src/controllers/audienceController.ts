@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Audience } from "../models/Audience";
 import { RestError } from "../errors/RestError";
 import audienceService from "../services/audienceService";
+import { ValidationError } from "class-validator";
 
 const create = async (req: Request, res: Response) => {
   const audienceData = req.body;
@@ -13,8 +14,16 @@ const create = async (req: Request, res: Response) => {
   try {
     await audience.validate();
   } catch (error) {
+    if (
+      Array.isArray(error) &&
+      error.every((e) => e instanceof ValidationError)
+    ) {
+      const message = Object.values(error[0].constraints || {})[0];
+      return res.status(400).json({ error: message });
+    }
+
     console.error("Validation failed for audience:", error);
-    return res.status(400).json({ error: "Invalid audience data" });
+    return res.status(400).json({ error: "Invalid audience" });
   }
 
   try {
@@ -76,6 +85,7 @@ const update = async (req: Request, res: Response) => {
     await audience.validate();
 
     audience = await audienceService.update(audience);
+    console.log("Updated audience:", audience.toObject());
     res.status(200).json(audience.toObject());
   } catch (error) {
     if (error instanceof RestError) {
@@ -93,7 +103,12 @@ const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
-    await audienceService.remove(id);
+    const audience = await audienceService.getById(id);
+    if (!audience) {
+      return res.status(400).json({ error: `Audience ${id} not found` });
+    }
+
+    await audienceService.remove(audience);
     res.status(204).send();
   } catch (error) {
     if (error instanceof RestError) {

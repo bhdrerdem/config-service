@@ -5,7 +5,6 @@ import configurationService from "../services/configurationService";
 import { ValidationError } from "class-validator";
 import { Audience } from "../models/Audience";
 import audienceService from "../services/audienceService";
-import overrideService from "../services/overrideService";
 
 const create = async (req: Request, res: Response) => {
   const configData = req.body;
@@ -30,6 +29,16 @@ const create = async (req: Request, res: Response) => {
   }
 
   try {
+    const existingConfig = await configurationService.getByParameterKey(
+      configuration.parameterKey
+    );
+    if (existingConfig) {
+      throw new RestError(
+        `Configuration with parameter key ${configuration.parameterKey} already exists.`,
+        400
+      );
+    }
+
     configuration = await configurationService.create(configuration);
     res.status(201).json(configuration.toObject());
   } catch (error) {
@@ -76,32 +85,40 @@ const getById = async (req: Request, res: Response) => {
 const update = async (req: Request, res: Response) => {
   const id = req.params.id;
   const configData = req.body;
+
   if (!configData) {
     return res.status(400).json({ error: "Body cannot be null" });
   }
 
   try {
-    let configuration = await configurationService.getById(id);
+    const configuration = await configurationService.getById(id);
+
     if (!configuration) {
-      return res.status(400).json({ error: `Configuration ${id} not found` });
+      return res.status(404).json({ error: `Configuration ${id} not found` });
     }
 
     if (configData.version && configData.version !== configuration.version) {
       return res.status(412).json({
         error:
-          "The provided version shows that the entity has been updated in the meantime, please re-fetch the resource first",
+          "The provided version shows that the entity has been updated in the meantime, please re-fetch the resource first.",
       });
     }
 
-    configuration = Configuration.fromPlain({
+    const updatedData = {
       ...configuration.toObject(),
       ...configData,
-    });
+      parameterKey: configuration.parameterKey,
+    };
 
-    await configuration.validate();
+    const updatedConfiguration = Configuration.fromPlain(updatedData);
 
-    configuration = await configurationService.update(configuration);
-    res.status(200).json(configuration.toObject());
+    await updatedConfiguration.validate();
+
+    const savedConfiguration = await configurationService.update(
+      updatedConfiguration
+    );
+
+    return res.status(200).json(savedConfiguration.toObject());
   } catch (error) {
     if (error instanceof RestError) {
       return res.status(error.statusCode).json({ error: error.message });
@@ -116,7 +133,7 @@ const update = async (req: Request, res: Response) => {
     }
 
     console.error("Failed to update configuration:", error);
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to update configuration, please try again.",
     });
   }
@@ -126,7 +143,12 @@ const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
-    await configurationService.remove(id);
+    const configuration = await configurationService.getById(id);
+    if (!configuration) {
+      return res.status(404).json({ error: `Configuration ${id} not found` });
+    }
+
+    await configurationService.remove(configuration);
     res.status(204).send();
   } catch (error) {
     if (error instanceof RestError) {
@@ -140,7 +162,6 @@ const remove = async (req: Request, res: Response) => {
 
 const getAll = async (req: Request, res: Response) => {
   const audienceName = req.query.audience as string;
-  console.log("audienceName", audienceName);
   try {
     let audience: Audience | null = null;
     if (audienceName) {

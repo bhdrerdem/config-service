@@ -42,7 +42,8 @@ export class ConfigOverride {
   }
 
   public static async fromPlain(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
+    includes: string[] = []
   ): Promise<ConfigOverride> {
     try {
       const overrideData: Partial<ConfigOverride> = {
@@ -58,13 +59,16 @@ export class ConfigOverride {
         throw new RestError(`Audience is required`, 400);
       }
 
-      const audience = await audienceService.getById(
-        (data.audience as Record<string, string>).name
-      );
-      if (!audience) {
-        throw new RestError(`Audience ${data.audience.name} not found`, 404);
+      overrideData.audience = plainToInstance(Audience, data.audience);
+      if (includes.includes("audience")) {
+        const audience = await audienceService.getById(
+          (data.audience as Record<string, string>).name
+        );
+        if (!audience) {
+          throw new RestError(`Audience ${data.audience.name} not found`, 404);
+        }
+        overrideData.audience = audience;
       }
-      overrideData.audience = audience;
 
       if (
         !data.configuration ||
@@ -74,18 +78,22 @@ export class ConfigOverride {
         throw new RestError(`Configuration is required`, 400);
       }
 
-      const configuration = await configurationService.getById(
-        (data.configuration as Record<string, string>).id
+      overrideData.configuration = plainToInstance(
+        Configuration,
+        data.configuration
       );
-      if (!configuration) {
-        throw new RestError(
-          `Configuration ${
-            (data.configuration as Record<string, string>).id
-          } not found`,
-          404
+      if (includes.includes("configuration")) {
+        const configuration = await configurationService.getById(
+          (data.configuration as Record<string, string>).id
         );
+        if (!configuration) {
+          throw new RestError(
+            `Configuration ${data.configuration.id} not found`,
+            404
+          );
+        }
+        overrideData.configuration = configuration;
       }
-      overrideData.configuration = configuration;
 
       return plainToInstance(ConfigOverride, overrideData);
     } catch (error) {
@@ -108,7 +116,11 @@ export class ConfigOverride {
     }) as Record<string, unknown>;
   }
 
-  public static async fromDB(data: any, id: string): Promise<ConfigOverride> {
+  public static async fromDB(
+    data: any,
+    id: string,
+    includes: string[] = []
+  ): Promise<ConfigOverride> {
     if (!data.audienceRef) {
       throw new Error("Audience reference cannot be null");
     }
@@ -127,6 +139,6 @@ export class ConfigOverride {
 
     data.id = id;
 
-    return ConfigOverride.fromPlain(data);
+    return ConfigOverride.fromPlain(data, includes);
   }
 }
