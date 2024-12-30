@@ -5,6 +5,7 @@ import configurationService from "../services/configurationService";
 import { ValidationError } from "class-validator";
 import { Audience } from "../models/Audience";
 import audienceService from "../services/audienceService";
+import overrideService from "../services/overrideService";
 
 const create = async (req: Request, res: Response) => {
   const configData = req.body;
@@ -139,6 +140,7 @@ const remove = async (req: Request, res: Response) => {
 
 const getAll = async (req: Request, res: Response) => {
   const audienceName = req.query.audience as string;
+  console.log("audienceName", audienceName);
   try {
     let audience: Audience | null = null;
     if (audienceName) {
@@ -188,99 +190,6 @@ const getAllForMobile = async (req: Request, res: Response) => {
   }
 };
 
-const createOverride = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  console.log("body", req.body);
-  const audienceName = req.body.audience as string;
-  const value = req.body.value as string;
-
-  if (!audienceName || !value) {
-    return res.status(400).json({ error: "Audience and value are required" });
-  }
-
-  try {
-    const audience = await audienceService.getById(audienceName);
-    if (!audience) {
-      return res
-        .status(400)
-        .json({ error: `Audience ${audienceName} not found` });
-    }
-
-    const configuration = await configurationService.getById(id);
-    if (!configuration) {
-      return res.status(400).json({ error: `Configuration ${id} not found` });
-    }
-
-    const override = await configurationService.createOverride(
-      configuration,
-      audience,
-      value
-    );
-    res.status(201).json(override.toObject());
-  } catch (error) {
-    if (error instanceof RestError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-
-    console.error("Failed to create a configuration override:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to create a configuration override" });
-  }
-};
-
-const updateOverride = async (req: Request, res: Response) => {
-  const configurationId = req.params.id;
-  const overrideId = req.params.overrideId;
-  const value = req.body.value as string;
-
-  if (!value) {
-    return res.status(400).json({ error: "Field 'value' is required" });
-  }
-
-  try {
-    const configuration = await configurationService.getById(configurationId);
-    if (!configuration) {
-      return res
-        .status(400)
-        .json({ error: `Configuration ${configurationId} not found` });
-    }
-
-    let override = await configurationService.getOverrideById(overrideId);
-    if (!override) {
-      return res
-        .status(400)
-        .json({ error: `Override ${overrideId} not found` });
-    }
-
-    if (override.configurationId !== configurationId) {
-      return res.status(400).json({
-        error: `Override ${overrideId} does not belong to configuration ${configurationId}`,
-      });
-    }
-
-    override.value = value;
-
-    await configurationService.updateOverride(override);
-    res.status(200).json(override);
-  } catch (error) {
-    if (error instanceof RestError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-
-    console.error("Failed to update a configuration override:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to update a configuration override" });
-  }
-};
-
-const removeOverride = async (req: Request, res: Response) => {
-  const overrideId = req.params.overrideId;
-  await configurationService.removeOverride(overrideId);
-  res.status(204).send();
-};
-
 export default {
   create,
   getById,
@@ -288,7 +197,4 @@ export default {
   remove,
   getAll,
   getAllForMobile,
-  createOverride,
-  updateOverride,
-  removeOverride,
 };

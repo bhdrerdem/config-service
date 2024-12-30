@@ -64,10 +64,20 @@ export class Firestore {
     filters?: Array<{
       field: string;
       op: FirebaseFirestore.WhereFilterOp;
-      value: any;
+      value: unknown;
     }>
   ) {
-    let query: FirebaseFirestore.Query = this.client.collection(collection);
+    const converter = {
+      toFirestore: (data: any) => data,
+      fromFirestore: (snap: FirebaseFirestore.QueryDocumentSnapshot) =>
+        snap.data(),
+    };
+
+    let query = this.client
+      .collection(collection)
+      .withConverter(
+        converter
+      ) as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
 
     if (fields) {
       query = query.select(...fields);
