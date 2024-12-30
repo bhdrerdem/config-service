@@ -1,3 +1,4 @@
+import type { Audience } from "../store/audience";
 import {
   useConfigurationStore,
   type Configuration,
@@ -9,8 +10,8 @@ export function useConfig() {
 
   const { configurations, isLoading } = storeToRefs(configStore);
 
-  const fetchConfigurations = async () => {
-    await configStore.fetchConfigurations();
+  const fetchConfigurations = async (audience?: string) => {
+    await configStore.fetchConfigurations(audience);
   };
 
   const deleteConfiguration = async (config: Configuration) => {

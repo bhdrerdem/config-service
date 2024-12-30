@@ -2,42 +2,16 @@
   <div class="modal-background" v-if="visible">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title">Edit Configuration</h2>
+        <h3 class="modal-title">
+          <slot name="header"></slot>
+        </h3>
         <span class="btn-close" @click="closeModal">X</span>
       </div>
       <div class="modal-content">
-        <form @submit.prevent="saveChanges">
-          <label for="parameterKey">Parameter Key:</label>
-          <Input
-            type="text"
-            id="parameterKey"
-            placeholder="Edit parameter key"
-            v-model="editedConfig.parameterKey"
-            style="background-color: #fff; color: #000"
-            required
-          />
-
-          <label for="value">Value:</label>
-          <Input
-            type="text"
-            id="value"
-            placeholder="value"
-            v-model="editedConfig.value"
-            style="background-color: #fff; color: #000"
-            required
-          />
-
-          <label for="description">Description:</label>
-          <Input
-            type="text"
-            id="description"
-            placeholder="Edit description"
-            style="background-color: #fff; color: #000"
-            v-model="editedConfig.description"
-          />
-
-          <ActionButton type="submit" text="Edit" kind="primary" fullWidth />
-        </form>
+        <slot> </slot>
+      </div>
+      <div class="modal-footer" v-if="showFooter">
+        <slot name="footer"></slot>
       </div>
     </div>
   </div>
@@ -46,19 +20,21 @@
 <script setup>
 import { ref } from "vue";
 import ActionButton from "./Button.vue";
-import Input from "./Input.vue";
 
-const { visible, config } = defineProps(["visible", "config"]);
-const emit = defineEmits(["close", "save"]);
-
-const editedConfig = ref({ ...config });
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    required: true,
+  },
+  showFooter: {
+    type: Boolean,
+    default: true,
+  },
+});
+const emit = defineEmits(["close"]);
 
 const closeModal = () => {
   emit("close");
-};
-
-const saveChanges = () => {
-  emit("save", editedConfig.value);
 };
 </script>
 
@@ -98,23 +74,7 @@ const saveChanges = () => {
   margin: 0;
 }
 
-.modal-content {
+.modal-footer {
   margin-top: 20px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  margin-bottom: 8px;
-}
-
-input {
-  padding: 8px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 </style>

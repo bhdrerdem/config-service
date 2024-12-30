@@ -5,7 +5,9 @@ import {
 } from "vue-router";
 import SigninPage from "@/pages/SigninPage.vue";
 import PanelPage from "@/pages/Panel/Panel.vue";
+import AudiencePanel from "../pages/Audiences/AudiencePanel.vue";
 import { useAuth } from "../composables/useAuth";
+import OverridePanel from "../pages/Overrides/OverridePanel.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +19,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     name: "Panel",
     component: PanelPage,
+  },
+  {
+    path: "/audiences",
+    name: "Audiences",
+    component: AudiencePanel,
+  },
+  {
+    path: "/overrides",
+    name: "Overrides",
+    component: OverridePanel,
   },
 ];
 
