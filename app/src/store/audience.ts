@@ -49,7 +49,7 @@ export const useAudienceStore = defineStore("audience", {
           `/audiences/${audience.name}`,
           audience
         );
-        if (response.data && response.data.id === audience.name) {
+        if (response.data) {
           const index = this.audiences.findIndex(
             (c) => c.name === audience.name
           );
