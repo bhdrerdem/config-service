@@ -28,9 +28,9 @@
 
 <script setup>
 import { ref } from "vue";
-import Input from "../../components/Input.vue";
-import ActionButton from "../../components/Button.vue";
-import { useAudience } from "../../composables/useAudience";
+import Input from "../../../components/Input.vue";
+import ActionButton from "../../../components/Button.vue";
+import { useAudience } from "../../../composables/useAudience";
 
 const audienceName = ref("");
 const audienceDescription = ref("");

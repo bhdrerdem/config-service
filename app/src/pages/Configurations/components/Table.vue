@@ -35,27 +35,27 @@
     </thead>
     <tbody>
       <Spinner v-if="isLoading" />
-      <ConfigRow
+      <Row
         v-else
         v-for="(config, index) in sortedConfigs"
         :key="index"
         :config="config"
         :hideButtons="!!selectedOption"
       />
-      <ConfigAddRow v-if="!selectedOption" />
+      <AddRow v-if="!selectedOption" />
     </tbody>
   </table>
 </template>
 
 <script setup>
-import ConfigRow from "./ConfigRow.vue";
-import ConfigAddRow from "./ConfigAddRow.vue";
-import { useConfig } from "../../composables/useConfig";
+import Row from "./Row.vue";
+import AddRow from "./AddRow.vue";
+import { useConfig } from "../../../composables/useConfig";
 import { computed, onMounted, ref, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import Spinner from "../../components/Spinner.vue";
-import { useAudience } from "../../composables/useAudience";
+import Spinner from "../../../components/Spinner.vue";
+import { useAudience } from "../../../composables/useAudience";
 
 const { configurations, fetchConfigurations, isLoading } = useConfig();
 const { audiences, fetchAudiences } = useAudience();

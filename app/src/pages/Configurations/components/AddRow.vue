@@ -37,9 +37,9 @@
 
 <script setup>
 import { ref } from "vue";
-import Input from "../../components/Input.vue";
-import ActionButton from "../../components/Button.vue";
-import { useConfig } from "../../composables/useConfig";
+import Input from "../../../components/Input.vue";
+import ActionButton from "../../../components/Button.vue";
+import { useConfig } from "../../../composables/useConfig";
 
 const parameterKey = ref("");
 const value = ref("");

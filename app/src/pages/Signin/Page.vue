@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="image-container">
-      <img src="../assets/icon.png" alt="codeway-icon" />
+      <img src="../../assets/icon.png" alt="codeway-icon" />
     </div>
     <div class="signin-header">
       <h3>Please sign in</h3>
@@ -38,9 +38,9 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import Button from "../components/Button.vue";
-import Input from "../components/Input.vue";
-import { useAuth } from "../composables/useAuth";
+import Button from "../../components/Button.vue";
+import Input from "../../components/Input.vue";
+import { useAuth } from "../../composables/useAuth";
 
 const email = ref("");
 const password = ref("");

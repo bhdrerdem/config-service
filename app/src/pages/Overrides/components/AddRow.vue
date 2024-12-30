@@ -38,11 +38,11 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import Input from "../../components/Input.vue";
-import ActionButton from "../../components/Button.vue";
-import { useAudience } from "../../composables/useAudience";
-import { useConfig } from "../../composables/useConfig";
-import { useOverride } from "../../composables/useOverride";
+import Input from "../../../components/Input.vue";
+import ActionButton from "../../../components/Button.vue";
+import { useAudience } from "../../../composables/useAudience";
+import { useConfig } from "../../../composables/useConfig";
+import { useOverride } from "../../../composables/useOverride";
 
 const { audiences } = useAudience();
 const { configurations } = useConfig();

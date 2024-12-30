@@ -11,13 +11,15 @@ onAuthStateChanged(auth, async (user) => {
   const { setUser, setIsLoading } = useAuth();
 
   setUser(user);
-  if (!user) {
+  setIsLoading(false);
+
+  if (!user && router.currentRoute.value.path !== "/signin") {
     router.push("/signin");
-  } else {
+  } else if (user && router.currentRoute.value.path === "/signin") {
     router.push("/");
   }
-  setIsLoading(false);
 });
+
 
 const app = createApp(App);
 const pinia = createPinia();

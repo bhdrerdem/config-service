@@ -1,8 +1,7 @@
 <template>
   <tr class="config-row">
-    <td class="config-data">{{ override.parameterKey }}</td>
-    <td class="config-data">{{ override.audience }}</td>
-    <td class="config-data">{{ override.value }}</td>
+    <td class="config-data">{{ audience.name }}</td>
+    <td class="config-data" style="width: 50%">{{ audience.description }}</td>
     <td>
       <div class="action-btn-container">
         <ActionButton text="Edit" kind="secondary" :onClick="openEditModal" />
@@ -13,19 +12,19 @@
   <EditModal
     v-if="isEditModalOpen"
     :visible="isEditModalOpen"
-    :override="override"
+    :audience="audience"
     @close="closeEditModal"
   />
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import ActionButton from "../../components/Button.vue";
-import { useOverride } from "../../composables/useOverride";
+import { ref } from "vue";
+import ActionButton from "../../../components/Button.vue";
+import { useAudience } from "../../../composables/useAudience";
 import EditModal from "./EditModal.vue";
 
 const props = defineProps({
-  override: {
+  audience: {
     type: Object,
     required: true,
   },
@@ -43,9 +42,9 @@ const closeEditModal = () => {
 };
 
 const handleDelete = async () => {
-  if (confirm("Are you sure you want to delete this override?")) {
+  if (confirm("Are you sure you want to delete this audience?")) {
     try {
-      await useOverride().deleteOverride(props.override);
+      await useAudience().deleteAudience(props.audience);
     } catch (error) {
       alert(error.message);
     }

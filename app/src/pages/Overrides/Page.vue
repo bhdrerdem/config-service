@@ -1,12 +1,12 @@
 <template>
   <div class="panel">
     <Header />
-    <OverrideTable />
+    <Table />
   </div>
 </template>
 
 <script setup>
-import OverrideTable from "./OverrideTable.vue";
+import Table from "./components/Table.vue";
 import Header from "../../components/Header.vue";
 </script>
 

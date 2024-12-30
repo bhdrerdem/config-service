@@ -1,12 +1,12 @@
 <template>
   <div class="panel">
     <Header />
-    <AudiencesTable />
+    <Table />
   </div>
 </template>
 
 <script setup>
-import AudiencesTable from "./AudiencesTable.vue";
+import Table from "./components/Table.vue";
 import Header from "../../components/Header.vue";
 </script>
 

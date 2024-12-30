@@ -1,10 +1,9 @@
 <template>
   <tr class="config-row">
-    <td class="config-data">{{ config.parameterKey }}</td>
-    <td class="config-data">{{ config.value }}</td>
-    <td class="config-data" style="width: 30%">{{ config.description }}</td>
-    <td class="config-data">{{ formattedCreatedAt }}</td>
-    <td v-if="!hideButtons">
+    <td class="config-data">{{ override.parameterKey }}</td>
+    <td class="config-data">{{ override.audience }}</td>
+    <td class="config-data">{{ override.value }}</td>
+    <td>
       <div class="action-btn-container">
         <ActionButton text="Edit" kind="secondary" :onClick="openEditModal" />
         <ActionButton text="Delete" kind="primary" :onClick="handleDelete" />
@@ -14,19 +13,19 @@
   <EditModal
     v-if="isEditModalOpen"
     :visible="isEditModalOpen"
-    :config="config"
+    :override="override"
     @close="closeEditModal"
   />
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import ActionButton from "../../components/Button.vue";
-import { useConfig } from "../../composables/useConfig";
+import { ref } from "vue";
+import ActionButton from "../../../components/Button.vue";
+import { useOverride } from "../../../composables/useOverride";
 import EditModal from "./EditModal.vue";
 
 const props = defineProps({
-  config: {
+  override: {
     type: Object,
     required: true,
   },
@@ -43,20 +42,10 @@ const closeEditModal = () => {
   isEditModalOpen.value = false;
 };
 
-const formattedCreatedAt = computed(() => {
-  return new Intl.DateTimeFormat("default", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(props.config.createdAt));
-});
-
 const handleDelete = async () => {
-  if (confirm("Are you sure you want to delete this configuration?")) {
+  if (confirm("Are you sure you want to delete this override?")) {
     try {
-      await useConfig().deleteConfiguration(props.config);
+      await useOverride().deleteOverride(props.override);
     } catch (error) {
       alert(error.message);
     }
@@ -67,7 +56,8 @@ const handleDelete = async () => {
 <style scoped>
 .action-btn-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 10px;
   width: 100%;
   max-width: 160px;
 }

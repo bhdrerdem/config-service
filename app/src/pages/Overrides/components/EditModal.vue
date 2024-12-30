@@ -1,30 +1,42 @@
 <template>
   <BaseModal :visible="visible" @close="emitClose">
     <template #header>
-      <h2>Edit Audience</h2>
+      <h2>Edit Override</h2>
     </template>
     <div class="modal-content">
       <form ref="formRef" @submit.prevent="saveChanges" class="modal-form">
-        <label for="name">Name:</label>
+        <label for="name">Audience:</label>
         <Input
           type="text"
           class="audience-input"
           id="name"
           placeholder="Edit name"
-          v-model="editedAudience.name"
+          v-model="editedOverride.audience"
           style="background-color: #fff; color: #000"
           required
           readonly
         />
 
-        <label for="description">Description:</label>
+        <label for="name">Configuration:</label>
         <Input
           type="text"
           class="audience-input"
-          id="description"
-          placeholder="Edit description"
+          id="name"
+          placeholder="Edit name"
+          v-model="editedOverride.parameterKey"
           style="background-color: #fff; color: #000"
-          v-model="editedAudience.description"
+          required
+          readonly
+        />
+
+        <label for="value">Value:</label>
+        <Input
+          type="text"
+          class="override-input"
+          id="value"
+          placeholder="Edit value"
+          style="background-color: #fff; color: #000"
+          v-model="editedOverride.value"
         />
       </form>
     </div>
@@ -41,13 +53,13 @@
 
 <script setup>
 import { ref } from "vue";
-import BaseModal from "../../components/Modal.vue";
-import Input from "../../components/Input.vue";
-import ActionButton from "../../components/Button.vue";
-import { useAudience } from "../../composables/useAudience";
+import BaseModal from "../../../components/Modal.vue";
+import Input from "../../../components/Input.vue";
+import ActionButton from "../../../components/Button.vue";
+import { useOverride } from "../../../composables/useOverride";
 
 const props = defineProps({
-  audience: {
+  override: {
     type: Object,
     required: true,
   },
@@ -57,7 +69,7 @@ const props = defineProps({
   },
 });
 
-const editedAudience = ref({ ...props.audience });
+const editedOverride = ref({ ...props.override });
 const formRef = ref(null);
 
 const emit = defineEmits(["close"]);
@@ -68,7 +80,7 @@ const emitClose = () => {
 
 const saveChanges = async () => {
   try {
-    await useAudience().updateAudience(editedAudience.value);
+    await useOverride().updateOverride(editedOverride.value);
     emitClose();
   } catch (error) {
     alert(error.message);

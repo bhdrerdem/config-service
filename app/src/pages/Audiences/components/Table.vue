@@ -12,23 +12,23 @@
     </thead>
     <tbody>
       <Spinner v-if="isLoading" />
-      <AudienceRow
+      <Row
         v-else
         v-for="(audience, index) in audiences"
         :key="index"
         :audience="audience"
       />
-      <AudienceAddRow />
+      <AddRow />
     </tbody>
   </table>
 </template>
 
 <script setup>
-import AudienceRow from "./AudienceRow.vue";
-import AudienceAddRow from "./AudienceAddRow.vue";
+import Row from "./Row.vue";
+import AddRow from "./AddRow.vue";
 import { onMounted } from "vue";
-import Spinner from "../../components/Spinner.vue";
-import { useAudience } from "../../composables/useAudience";
+import Spinner from "../../../components/Spinner.vue";
+import { useAudience } from "../../../composables/useAudience";
 
 const { audiences, fetchAudiences, isLoading } = useAudience();
 

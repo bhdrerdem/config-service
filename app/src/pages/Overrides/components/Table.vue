@@ -15,23 +15,23 @@
     </thead>
     <tbody>
       <Spinner v-if="isLoading" />
-      <OverrideRow
+      <Row
         v-else
         v-for="(override, index) in customOverrides"
         :key="index"
         :override="override"
       />
-      <OverrideAddRow />
+      <AddRow />
     </tbody>
   </table>
 </template>
 
 <script setup>
 import { onMounted } from "vue";
-import Spinner from "../../components/Spinner.vue";
-import OverrideRow from "./OverrideRow.vue";
-import OverrideAddRow from "./OverrideAddRow.vue";
-import { useOverride } from "../../composables/useOverride";
+import Spinner from "../../../components/Spinner.vue";
+import Row from "./Row.vue";
+import AddRow from "./AddRow.vue";
+import { useOverride } from "../../../composables/useOverride";
 
 const { customOverrides, fetchOverrides, isLoading } = useOverride();
 

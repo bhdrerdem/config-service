@@ -3,11 +3,10 @@ import {
   createRouter,
   createWebHistory,
 } from "vue-router";
-import SigninPage from "@/pages/SigninPage.vue";
-import PanelPage from "@/pages/Panel/Panel.vue";
-import AudiencePanel from "../pages/Audiences/AudiencePanel.vue";
-import { useAuth } from "../composables/useAuth";
-import OverridePanel from "../pages/Overrides/OverridePanel.vue";
+import SigninPage from "@/pages/Signin/Page.vue";
+import PanelPage from "@/pages/Configurations/Page.vue";
+import AudiencePage from "../pages/Audiences/Page.vue";
+import OverridePage from "../pages/Overrides/Page.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,30 +22,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/audiences",
     name: "Audiences",
-    component: AudiencePanel,
+    component: AudiencePage,
   },
   {
     path: "/overrides",
     name: "Overrides",
-    component: OverridePanel,
+    component: OverridePage,
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
-
-router.beforeEach((to, _, next) => {
-  const isAuthenticated = !!useAuth().user.value;
-
-  if (!isAuthenticated && to.path !== "/signin") {
-    next("/signin");
-  } else if (isAuthenticated && to.path === "/signin") {
-    next("/");
-  } else {
-    next();
-  }
 });
 
 export default router;

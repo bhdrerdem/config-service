@@ -51,10 +51,10 @@
 
 <script setup>
 import { ref } from "vue";
-import BaseModal from "../../components/Modal.vue";
-import Input from "../../components/Input.vue";
-import ActionButton from "../../components/Button.vue";
-import { useConfig } from "../../composables/useConfig";
+import BaseModal from "../../../components/Modal.vue";
+import Input from "../../../components/Input.vue";
+import ActionButton from "../../../components/Button.vue";
+import { useConfig } from "../../../composables/useConfig";
 
 const props = defineProps({
   config: {
