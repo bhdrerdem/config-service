@@ -15,6 +15,7 @@
             v-model="editedConfig.parameterKey"
             style="background-color: #fff; color: #000"
             required
+            readonly
           />
         </div>
 
