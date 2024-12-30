@@ -75,8 +75,17 @@ const remove = async (req: Request, res: Response) => {
 };
 
 const getAll = async (req: Request, res: Response) => {
-  const overrides = await overrideService.getAllForUI();
-  res.status(200).json(overrides);
+  try {
+    const overrides = await overrideService.getAllForUI();
+    res.status(200).json(overrides.map((o) => o.toObject()));
+  } catch (error) {
+    if (error instanceof RestError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+
+    console.error("Failed to get all override:", error);
+    return res.status(500).json({ error: "Failed to get all override" });
+  }
 };
 
 export default {
