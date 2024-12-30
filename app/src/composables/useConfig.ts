@@ -1,4 +1,3 @@
-import type { Audience } from "../store/audience";
 import {
   useConfigurationStore,
   type Configuration,
