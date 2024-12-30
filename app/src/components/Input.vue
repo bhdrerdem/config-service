@@ -42,7 +42,6 @@ input {
   color: #fff;
   text-align: left;
   text-indent: 10px;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
 }
 
 input::placeholder {
