@@ -25,10 +25,19 @@ export const useConfigurationStore = defineStore("configuration", {
   }),
 
   actions: {
-    async fetchConfigurations() {
+    async fetchConfigurations(audience?: string) {
       this.isLoading = true;
       try {
-        const response = await useApi().axiosInstance.get("/configurations");
+        const response = await useApi().axiosInstance.get(
+          "/configurations",
+          audience
+            ? {
+                params: {
+                  audience: audience,
+                },
+              }
+            : undefined
+        );
         if (response.data && Array.isArray(response.data)) {
           this.configurations = response.data.map((c: any) => ({
             id: c.id,

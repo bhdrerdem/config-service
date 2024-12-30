@@ -1,13 +1,13 @@
 <template>
   <div class="panel">
-    <PanelHeader />
+    <Header />
     <ConfigsTable />
   </div>
 </template>
 
 <script setup>
 import ConfigsTable from "./ConfigsTable.vue";
-import PanelHeader from "./PanelHeader.vue";
+import Header from "../../components/Header.vue";
 </script>
 
 <style scoped>

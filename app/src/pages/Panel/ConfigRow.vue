@@ -4,7 +4,7 @@
     <td class="config-data">{{ config.value }}</td>
     <td class="config-data" style="width: 30%">{{ config.description }}</td>
     <td class="config-data">{{ formattedCreatedAt }}</td>
-    <td>
+    <td v-if="!hideButtons">
       <div class="action-btn-container">
         <ActionButton text="Edit" kind="secondary" :onClick="openEditModal" />
         <ActionButton text="Delete" kind="primary" :onClick="handleDelete" />
@@ -16,7 +16,6 @@
     :visible="isEditModalOpen"
     :config="config"
     @close="closeEditModal"
-    @save="saveChanges"
   />
 </template>
 
@@ -24,13 +23,14 @@
 import { computed, ref } from "vue";
 import ActionButton from "../../components/Button.vue";
 import { useConfig } from "../../composables/useConfig";
-import EditModal from "../../components/Modal.vue";
+import EditModal from "./EditModal.vue";
 
 const props = defineProps({
   config: {
     type: Object,
     required: true,
   },
+  hideButtons: Boolean,
 });
 
 const isEditModalOpen = ref(false);
@@ -67,7 +67,7 @@ const handleDelete = async () => {
 .action-btn-container {
   display: flex;
   justify-content: space-between;
-  padding: 8px;
+  width: 100%;
   max-width: 160px;
 }
 
@@ -104,7 +104,7 @@ const handleDelete = async () => {
     display: none;
   }
   .config-row {
-    height: 30px;
+    height: 40px;
     margin-bottom: 10px;
   }
 }

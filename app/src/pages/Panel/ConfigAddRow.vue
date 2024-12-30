@@ -101,8 +101,7 @@ const handleCreate = async () => {
 
   .action-btn-container {
     display: flex;
-    justify-content: space-between;
-    padding: 8px;
+    gap: 10px;
     max-width: 160px;
   }
 }
