@@ -35,7 +35,7 @@ Deployment pipelines are set up using GitHub Actions. These pipelines automate t
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/bhdrerdem/codeway-case-study.git
+   git clone https://github.com/bhdrerdem/config-service.git
    ```
 
 2. **Install dependencies**:
