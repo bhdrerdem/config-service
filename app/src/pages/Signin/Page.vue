@@ -1,8 +1,6 @@
 <template>
   <div class="card">
-    <div class="image-container">
-      <img src="../../assets/icon.png" alt="codeway-icon" />
-    </div>
+    <div class="image-container"></div>
     <div class="signin-header">
       <h3>Please sign in</h3>
     </div>
@@ -32,7 +30,6 @@
         </div>
       </form>
     </div>
-    <footer>Codeway © 2024</footer>
   </div>
 </template>
 

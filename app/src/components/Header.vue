@@ -1,14 +1,6 @@
 <template>
   <div class="header">
     <div class="header-left">
-      <div class="header-logo">
-        <img
-          src="@/assets/icon.png"
-          alt="Codeway Logo"
-          @click="$router.push('/')"
-        />
-      </div>
-
       <div v-if="!isMobileView" class="header-actions">
         <div class="header-action">
           <span class="header-route-link" @click="$router.push('/audiences')"

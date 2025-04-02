@@ -13,9 +13,9 @@ jobs:
     env:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      SERVICE_NAME: prod-codeway-case-ui
+      SERVICE_NAME: prod-configuration-service-ui
       REGION: europe-west1
-      REPO: codeway-case-ui
+      REPO: configuration-service-ui
       IMAGE_NAME: app
 
     steps:

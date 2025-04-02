@@ -13,13 +13,13 @@ provider "google" {
 
 # VPC
 resource "google_compute_network" "vpc" {
-  name                    = "codeway-case-vpc"
+  name                    = "configuration-service-vpc"
   auto_create_subnetworks = false
 }
 
 # Subnet
 resource "google_compute_subnetwork" "default-subnetwork" {
-  name          = "codeway-case-default-subnetwork"
+  name          = "configuration-service-default-subnetwork"
   ip_cidr_range = "10.0.0.0/24"
   network       = google_compute_network.vpc.id
   region        = "europe-west1"
@@ -27,7 +27,7 @@ resource "google_compute_subnetwork" "default-subnetwork" {
 
 # Redis
 resource "google_redis_instance" "cache" {
-  name           = "codeway-case-redis-cache"
+  name           = "configuration-service-redis-cache"
   tier           = "BASIC"
   memory_size_gb = 1
   region         = "europe-west1"
@@ -36,7 +36,7 @@ resource "google_redis_instance" "cache" {
   connect_mode       = "DIRECT_PEERING"
 
   redis_version = "REDIS_6_X"
-  display_name  = "Codeway Case Redis Cache"
+  display_name  = "Configuration Service Redis Cache"
 }
 
 # Allow incoming connections to Redis from subnet
@@ -64,7 +64,7 @@ resource "google_vpc_access_connector" "vpc_connector" {
 
 # Backend Service
 resource "google_cloud_run_service" "server" {
-  name     = "prod-codeway-case-server"
+  name     = "prod-configuration-service-server"
   location = "europe-west1"
   project  = var.project_id
 
@@ -122,7 +122,7 @@ resource "google_cloud_run_service_iam_binding" "unauthenticated" {
 
 # Frontend Service
 resource "google_cloud_run_service" "ui" {
-  name     = "prod-codeway-case-ui"
+  name     = "prod-configuration-service-ui"
   location = "europe-west1"
   project  = var.project_id
 

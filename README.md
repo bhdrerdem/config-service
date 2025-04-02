@@ -1,8 +1,8 @@
-# Codeway Case Study
+# Configuration Service
 
 ## Overview
 
-Codeway Case is a full-stack application designed to manage configurations, audiences and configuration overrides. The system leverages Firebase for authentication and Firestore for data storage, with Redis for caching. The application is containerized using Docker and deployed on Google Cloud Platform (GCP) using Cloud Run.
+Configuration service is a full-stack application designed to manage configurations, audiences and configuration overrides. The system leverages Firebase for authentication and Firestore for data storage, with Redis for caching. The application is containerized using Docker and deployed on Google Cloud Platform (GCP) using Cloud Run.
 
 ## Features
 
@@ -24,7 +24,7 @@ Codeway Case is a full-stack application designed to manage configurations, audi
 
 ## Infrastructure as Code (IaC)
 
-The infrastructure for Codeway Case is managed using Terraform, which allows for consistent and repeatable deployments.
+The infrastructure is managed using Terraform, which allows for consistent and repeatable deployments.
 
 ## Deployment Pipelines
 
@@ -142,7 +142,7 @@ Deployment pipelines are set up using GitHub Actions. These pipelines automate t
 
 ## API Endpoints
 
-Here are the main API endpoints available in the Codeway Case application:
+Here are the main API endpoints available in the application:
 
 ### Configurations
 

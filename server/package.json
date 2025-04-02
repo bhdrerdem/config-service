@@ -1,5 +1,5 @@
 {
-  "name": "codeway-case",
+  "name": "config-service-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

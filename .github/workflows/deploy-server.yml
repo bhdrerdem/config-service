@@ -13,9 +13,9 @@ jobs:
     env:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      SERVICE_NAME: prod-codeway-case-server
+      SERVICE_NAME: prod-configuration-service-server
       REGION: europe-west1
-      REPO: codeway-case-server
+      REPO: configuration-service-server
       IMAGE_NAME: api
 
     steps:
