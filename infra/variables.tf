@@ -3,11 +3,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "image_url" {
-  description = "Image URL from backend service"
-  type        = string
-}
-
 variable "firebase_project_id" {
   description = "Firebase project ID"
   type        = string
@@ -53,7 +48,17 @@ variable "firebase_app_id" {
   type        = string
 }
 
-variable "ui_image_url" {
-  description = "Frontend image url"
-  type = string
+variable "image_name" {
+  description = "Name of the backend service image"
+  type        = string
+}
+
+variable "ui_image_name" {
+  description = "Name of the frontend service image"
+  type        = string
+}
+
+variable "repo_id" {
+  description = "Name of the frontend service image"
+  type        = string
 }
