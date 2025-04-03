@@ -109,8 +109,9 @@ Deployment pipelines are set up using GitHub Actions. These pipelines automate t
 
    ```plaintext
    project_id = "your-gcp-project-id"
-   image_url = "your-backend-image-url"
-   ui_image_url = "your-frontend-image-url"
+   repo_id = "your-repo-id"
+   image_name = "your-server-image-name"
+   ui_image_name = "your-ui-image-name"
    firebase_project_id = "your-firebase-project-id"
    firebase_private_key = "your-firebase-private-key"
    firebase_client_email = "your-firebase-client-email"
@@ -128,17 +129,30 @@ Deployment pipelines are set up using GitHub Actions. These pipelines automate t
    terraform init
    ```
 
-6. **Plan the Deployment**: This will show you the changes that will be made to your infrastructure.
+6. **Step 1 – Create the Artifact Registry**: Apply only the Artifact Registry resource to set up the Docker repository.
 
    ```bash
-   terraform plan
+   terraform apply -target=google_artifact_registry_repository.repository
    ```
 
-7. **Apply the Deployment**: This will create the infrastructure as defined in the Terraform scripts.
+7. **Step 2 – Build & Push the Docker Image**: Build your Docker image and push it to the Artifact Registry.
+
+   ```bash
+   cd ../server
+   docker build -t europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${image_name} .
+   docker push europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${image_name}
+   cd ../app
+   docker build -t europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${ui_image_name} .
+   docker push europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${ui_image_name}
+   ```
+
+8. **Step 3 – Apply the Rest of the Infrastructure**: Now that the Docker image is available, apply the rest of the Terraform configuration to deploy the Cloud Run services and other resources.
 
    ```bash
    terraform apply
    ```
+
+By following these steps, you ensure that the Artifact Registry is set up before building and pushing Docker images, and that the rest of the infrastructure is applied only after the images are available. This sequence helps prevent deployment issues related to missing images.
 
 ## API Endpoints
 
