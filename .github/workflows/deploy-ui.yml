@@ -15,7 +15,7 @@ jobs:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
       SERVICE_NAME: prod-configuration-service-ui
       REGION: europe-west1
-      REPO: configuration-service-ui
+      REPO: config-service
       IMAGE_NAME: app
 
     steps:
