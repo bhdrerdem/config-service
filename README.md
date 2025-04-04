@@ -139,10 +139,10 @@ Deployment pipelines are set up using GitHub Actions. These pipelines automate t
 
    ```bash
    cd ../server
-   docker build -t europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${image_name} .
+   docker build --platform=linux/amd64 -t europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${image_name} .
    docker push europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${image_name}
    cd ../app
-   docker build -t europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${ui_image_name} .
+   docker build --platform=linux/amd64 -t europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${ui_image_name} .
    docker push europe-west1-docker.pkg.dev/${project_id}/${repo_id}/${ui_image_name}
    ```
 
