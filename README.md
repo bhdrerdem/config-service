@@ -2,7 +2,7 @@
 
 ## Overview
 
-Configuration service is a full-stack application designed to manage configurations, audiences and configuration overrides. The system leverages Firebase for authentication and Firestore for data storage, with Redis for caching. The application is containerized using Docker and deployed on Google Cloud Platform (GCP) using Cloud Run.
+The Configuration Service is a full-stack, cloud-native application designed to centrally manage and deliver remote configuration settings for various audiences or user segments. It enables dynamic control over feature flags, environment-specific settings, and other key configurations without requiring code changes or redeployment. The system leverages Firebase for authentication and Firestore for data storage, with Redis for caching. The application is containerized using Docker and deployed on Google Cloud Platform (GCP) using Cloud Run.
 
 ## Features
 
