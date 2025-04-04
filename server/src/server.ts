@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { Config } from "./config";
-import { Redis } from "./storage/Redis";
+import { Cache } from "./storage/Cache";
 import { Firestore } from "./storage/DB";
 import v1Routes from "./routes/v1Routes";
 import cors from "cors";
@@ -14,19 +14,19 @@ export class Server {
   }
 
   public async run() {
-    await Redis.init(this.config.redis);
+    await Cache.init(this.config.cache);
     await Firestore.init(this.config.firebase);
 
-    const redis = Redis.getInstance();
+    const cache = Cache.getInstance();
 
     setInterval(async () => {
       try {
-        if (!redis.getHealthCheck()) {
+        if (!cache.getHealthCheck()) {
           console.log("Redis is not healthy, attempting to reconnect...");
           this.health = false;
-          await redis.connect();
+          await cache.connect();
         }
-        await redis.ping();
+        await cache.ping();
       } catch (error) {
         this.health = false;
         console.error("Error during Redis health check or reconnect:", error);

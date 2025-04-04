@@ -1,6 +1,6 @@
 import { Audience } from "../models/Audience";
 import { Firestore } from "../storage/DB";
-import { Redis } from "../storage/Redis";
+import { Cache } from "../storage/Cache";
 import { RestError } from "../errors/RestError";
 import configurationService from "./configurationService";
 import overrideService from "./overrideService";
@@ -29,7 +29,7 @@ const create = async (audience: Audience): Promise<Audience> => {
 };
 
 const getById = async (id: string): Promise<Audience | null> => {
-  const cache = Redis.getInstance();
+  const cache = Cache.getInstance();
   const db = Firestore.getInstance();
 
   try {
@@ -62,7 +62,7 @@ const getById = async (id: string): Promise<Audience | null> => {
 };
 
 const update = async (audience: Audience): Promise<Audience> => {
-  const cache = Redis.getInstance();
+  const cache = Cache.getInstance();
   const db = Firestore.getInstance();
 
   audience.updatedAt = new Date();
@@ -89,7 +89,7 @@ const update = async (audience: Audience): Promise<Audience> => {
 
 const remove = async (audience: Audience): Promise<void> => {
   const db = Firestore.getInstance();
-  const cache = Redis.getInstance();
+  const cache = Cache.getInstance();
 
   await db.delete(DB_AUDIENCE_COLLECTION, audience.name);
 

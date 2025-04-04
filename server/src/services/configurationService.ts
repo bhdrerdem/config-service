@@ -1,6 +1,6 @@
 import { Configuration } from "../models/Configuration";
 import { Firestore } from "../storage/DB";
-import { Redis } from "../storage/Redis";
+import { Cache } from "../storage/Cache";
 import { RestError } from "../errors/RestError";
 import { Audience } from "../models/Audience";
 import overrideService from "./overrideService";
@@ -37,7 +37,7 @@ const getById = async (
   id: string,
   audience: Audience | null = null
 ): Promise<Configuration | null> => {
-  const cache = Redis.getInstance();
+  const cache = Cache.getInstance();
   const db = Firestore.getInstance();
 
   try {
@@ -80,7 +80,7 @@ const getById = async (
 };
 
 const update = async (configuration: Configuration): Promise<Configuration> => {
-  const cache = Redis.getInstance();
+  const cache = Cache.getInstance();
   const db = Firestore.getInstance();
 
   configuration.version = configuration.version ? configuration.version + 1 : 1;
@@ -119,10 +119,10 @@ const getAll = async (
   audience: Audience | null = null
 ): Promise<Configuration[]> => {
   const db = Firestore.getInstance();
-  const redis = Redis.getInstance();
+  const cache = Cache.getInstance();
 
   try {
-    const cachedConfigs = await redis.hget(
+    const cachedConfigs = await cache.hget(
       CACHE_CONFIG_ALL_PREFIX,
       audience?.name ?? "default"
     );
@@ -158,7 +158,7 @@ const getAll = async (
   }
 
   try {
-    await redis.hset(
+    await cache.hset(
       `${CACHE_CONFIG_ALL_PREFIX}`,
       audience?.name ?? "default",
       JSON.stringify(configurations.map((config) => config.toObject()))
@@ -212,7 +212,7 @@ const invalidateCache = async (
   configuration: Configuration | null = null,
   audience: Audience | null = null
 ): Promise<void> => {
-  const cache = Redis.getInstance();
+  const cache = Cache.getInstance();
 
   try {
     if (!configuration && !audience) {

@@ -2,8 +2,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export type RedisConfig = {
+export type CacheConfig = {
   host: string;
+  isDisabled: boolean;
 };
 
 export type FirebaseConfig = {
@@ -14,16 +15,17 @@ export type FirebaseConfig = {
 
 export type Config = {
   port: number;
-  redis: RedisConfig;
+  cache: CacheConfig;
   firebase: FirebaseConfig;
   apiToken: string;
 };
 
 export default {
   port: process.env.PORT || 8080,
-  redis: {
-    host: process.env.REDIS_HOST || "localhost",
-  } as RedisConfig,
+  cache: {
+    host: process.env.CACHE_HOST || "localhost",
+    isDisabled: process.env.CACHE_DISABLED === "true",
+  } as CacheConfig,
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID || "",
     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/gm, "\n") || "",
