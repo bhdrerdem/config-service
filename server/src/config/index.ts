@@ -23,7 +23,7 @@ export type Config = {
 export default {
   port: process.env.PORT || 8080,
   cache: {
-    host: process.env.CACHE_HOST || "localhost",
+    host: process.env.REDIS_HOST || "localhost",
     isDisabled: process.env.CACHE_DISABLED === "true",
   } as CacheConfig,
   firebase: {

@@ -5,11 +5,9 @@ import { Cache } from "./Cache";
 import { ICache } from "./ICache";
 
 export class RedisCache implements ICache {
-  private cache: Cache;
   private redisClient: RedisClientType;
 
   constructor(config: CacheConfig) {
-    this.cache = Cache.getInstance();
     this.redisClient = createClient({
       url: `redis://${config.host}:6379`,
     });
