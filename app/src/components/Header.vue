@@ -3,6 +3,11 @@
     <div class="header-left">
       <div v-if="!isMobileView" class="header-actions">
         <div class="header-action">
+          <span class="header-route-link" @click="$router.push('/')"
+            >CONFIGURATIONS</span
+          >
+        </div>
+        <div class="header-action">
           <span class="header-route-link" @click="$router.push('/audiences')"
             >AUDIENCES</span
           >
