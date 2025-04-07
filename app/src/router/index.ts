@@ -29,6 +29,10 @@ const routes: Array<RouteRecordRaw> = [
     name: "Overrides",
     component: OverridePage,
   },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/",
+  },
 ];
 
 const router = createRouter({
