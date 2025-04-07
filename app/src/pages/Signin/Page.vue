@@ -39,8 +39,8 @@ import Button from "../../components/Button.vue";
 import Input from "../../components/Input.vue";
 import { useAuth } from "../../composables/useAuth";
 
-const email = ref("");
-const password = ref("");
+const email = ref("admin@admin.com");
+const password = ref("admin123");
 
 const { signin, isLoading, error } = useAuth();
 
