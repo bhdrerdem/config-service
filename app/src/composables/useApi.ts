@@ -6,7 +6,7 @@ const PREDEFINED_API_TOKEN = config.VITE_API_TOKEN;
 
 const axiosInstance = axios.create({
   baseURL: `${config.VITE_BACKEND_URL}/api/v1`,
-  timeout: 10000,
+  timeout: 60000,
 });
 
 export function useApi() {

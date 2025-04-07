@@ -20,7 +20,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-
 const app = createApp(App);
 const pinia = createPinia();
 
